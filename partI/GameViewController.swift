@@ -37,10 +37,4 @@ class GameViewController: UIViewController {
 
     // -------------------------------------------------------------------------
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-
-    // -------------------------------------------------------------------------
-
 }

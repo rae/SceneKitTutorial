@@ -16,7 +16,7 @@ public func SKTTimingFunctionLinear(_ t: CGFloat) -> CGFloat {
 }
 
 public func SKTCreateShakeFunction(_ oscillations: Int) -> (CGFloat) -> CGFloat {
-    return { t in -pow(2.0, -10.0 * t) * sin(t * pi * CGFloat(oscillations) * 2.0) + 1.0 }
+    return { t in -pow(2.0, -10.0 * t) * sin(t * .pi * CGFloat(oscillations) * 2.0) + 1.0 }
 }
 
 // -----------------------------------------------------------------------------

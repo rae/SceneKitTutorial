@@ -121,10 +121,4 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
 
     // -------------------------------------------------------------------------
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-
-    // -------------------------------------------------------------------------
-
 }

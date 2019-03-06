@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal enum RBLogSeverity : Int {
+enum RBLogSeverity : Int {
     case debug = 0
     case info = 1
     case warning = 2
@@ -16,13 +16,13 @@ internal enum RBLogSeverity : Int {
     case none = 4
 }
 
-internal class RBLog: NSObject {
+class RBLog: NSObject {
     static var _severity = RBLogSeverity.debug
     
     // -----------------------------------------------------------------------------
     // MARK: - Properties
     
-    static internal var severity: RBLogSeverity {
+    static var severity: RBLogSeverity {
         get {
             return _severity
         }
@@ -34,7 +34,7 @@ internal class RBLog: NSObject {
     // -------------------------------------------------------------------------
     // MARK: - Logging severity
         
-    static internal func error(message: String) {
+    static func error(message: String) {
         if (RBLogSeverity.error.rawValue >= RBLog.severity.rawValue) {
             RBLog.log(message: message, severity: "⛔️")
         }
@@ -42,7 +42,7 @@ internal class RBLog: NSObject {
     
     // -------------------------------------------------------------------------
     
-    static internal func warning(message: String) {
+    static func warning(message: String) {
         if (RBLogSeverity.warning.rawValue >= RBLog.severity.rawValue) {
             RBLog.log(message: message, severity: "⚠️")
         }
@@ -50,7 +50,7 @@ internal class RBLog: NSObject {
 
     // -------------------------------------------------------------------------
 
-    static internal func info(message: String) {
+    static func info(message: String) {
         if (RBLogSeverity.info.rawValue >= RBLog.severity.rawValue) {
             RBLog.log(message: message, severity: "▷")
         }
@@ -58,7 +58,7 @@ internal class RBLog: NSObject {
     
     // -------------------------------------------------------------------------
 
-    static internal func debug(message: String) {
+    static func debug(message: String) {
         if (RBLogSeverity.debug.rawValue >= RBLog.severity.rawValue) {
             RBLog.log(message: message, severity: "→")
         }
@@ -73,7 +73,7 @@ internal class RBLog: NSObject {
     
     // -------------------------------------------------------------------------
    
-    internal static func write(message: String) {
+    static func write(message: String) {
         print(message)
     }
     

@@ -59,7 +59,7 @@ public extension CGPoint {
     
     // ------------------------------------------------------------------------------
     
-    internal func normalized() -> CGPoint {
+    func normalized() -> CGPoint {
         let len = length()
         
         return len>0 ? self / len : CGPoint.zero

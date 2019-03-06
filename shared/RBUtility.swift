@@ -9,19 +9,17 @@
 import Foundation
 import CoreGraphics
 
-internal let pi = CGFloat(Double.pi)
-
 // -----------------------------------------------------------------------------
 // MARK: - Deg/Rad
 
 public func degreesToRadians(value: CGFloat) -> CGFloat {
-    return value * pi / 180.0
+    return value * .pi / 180.0
 }
 
 // -----------------------------------------------------------------------------
 
 public func radiansToDegrees(value: CGFloat) -> CGFloat {
-    return value * 180.0 / pi
+    return value * 180.0 / .pi
 }
 
 // -----------------------------------------------------------------------------
