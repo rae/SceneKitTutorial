@@ -14,7 +14,7 @@ public extension SCNVector3 {
         let dx = destination.x - x
         let dy = destination.y - y
         let dz = destination.z - z
-        
+
         return CGFloat(sqrt(dx*dx + dy*dy + dz*dz))
     }
 

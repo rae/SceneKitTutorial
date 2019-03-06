@@ -11,8 +11,6 @@ import SceneKit
 
 public typealias RBTerrainFormula = ((Int32, Int32) -> (Double))
 
-// -----------------------------------------------------------------------------
-
 public class RBTerrain: SCNNode {
     private var _heightScale = 256
     private var _terrainWidth = 32
@@ -20,27 +18,22 @@ public class RBTerrain: SCNNode {
     private var _terrainGeometry: SCNGeometry?
     private var _texture: RBImage?
     private var _color = RBColor.white
-    
+
     public var formula: RBTerrainFormula?
-    
-    // -------------------------------------------------------------------------
+
     // MARK: - Properties
-    
+
     public var length: Int {
         get {
             return _terrainLength
         }
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     public var width: Int {
         get {
             return _terrainLength
         }
     }
-    
-    // -------------------------------------------------------------------------
 
     public var texture: RBImage? {
         get {
@@ -48,7 +41,7 @@ public class RBTerrain: SCNNode {
         }
         set(value) {
             _texture = value
-            
+
             if (_terrainGeometry != nil && _texture != nil) {
                 let material = SCNMaterial()
                 material.diffuse.contents = _texture!
@@ -57,22 +50,20 @@ public class RBTerrain: SCNNode {
                 material.diffuse.wrapS = .repeat
                 material.diffuse.wrapT = .repeat
                 material.diffuse.contentsTransform = SCNMatrix4MakeScale(RBFloat(_terrainWidth*2), RBFloat(_terrainLength*2), 1)
-                
+
                 _terrainGeometry!.firstMaterial = material
                 _terrainGeometry!.firstMaterial!.isDoubleSided = true
             }
         }
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     public var color: RBColor {
         get {
             return _color
         }
         set(value) {
             _color = value
-            
+
             if (_terrainGeometry != nil) {
                 let material = SCNMaterial()
                 material.diffuse.contents = _color
@@ -83,10 +74,9 @@ public class RBTerrain: SCNNode {
             }
         }
     }
-    
-    // -------------------------------------------------------------------------
+
     // MARK: - Terrain formula
-    
+
     public func valueFor(x: Int32, y: Int32) ->Double {
         guard let formula = formula else {
             return 0.0
@@ -94,7 +84,6 @@ public class RBTerrain: SCNNode {
         return formula(x, y)
     }
 
-    // -------------------------------------------------------------------------
     // MARK: - Geometry creation
 
     private func createGeometry() ->SCNGeometry {
@@ -116,7 +105,7 @@ public class RBTerrain: SCNNode {
         var vertices = [SCNVector3](repeating:SCNVector3Zero, count:maxElements)
         var normals = [SCNVector3](repeating:SCNVector3Zero, count:maxElements)
         var uvList: [vector_float2] = []
-        
+
         var vertexCount = 0
         let factor: CGFloat = 0.5
 
@@ -126,7 +115,7 @@ public class RBTerrain: SCNNode {
                 let topRightZ = valueFor(x: Int32(x+1), y: Int32(y+1)) / scale
                 let bottomLeftZ = valueFor(x: Int32(x), y: Int32(y)) / scale
                 let bottomRightZ = valueFor(x: Int32(x+1), y: Int32(y)) / scale
-                
+
                 let topLeft = SCNVector3Make(RBFloat(x)-RBFloat(factor), RBFloat(topLeftZ), RBFloat(y)+RBFloat(factor))
                 let topRight = SCNVector3Make(RBFloat(x)+RBFloat(factor), RBFloat(topRightZ), RBFloat(y)+RBFloat(factor))
                 let bottomLeft = SCNVector3Make(RBFloat(x)-RBFloat(factor), RBFloat(bottomLeftZ), RBFloat(y)-RBFloat(factor))
@@ -144,7 +133,7 @@ public class RBTerrain: SCNNode {
                 uvList.append(vector_float2(Float(xf/w), Float((yf+factor)/h)))
                 uvList.append(vector_float2(Float((xf+factor)/w), Float((yf+factor)/h)))
                 uvList.append(vector_float2(Float((xf+factor)/w), Float(yf/h)))
-                
+
                 vertexCount += 4
             }
         }
@@ -163,7 +152,7 @@ public class RBTerrain: SCNNode {
 
         let element = SCNGeometryElement(data: geometryData as Data, primitiveType: .triangles, primitiveCount: vertexCount/2, bytesPerIndex: sizeOfCInt)
         elements.append(element)
-        
+
         for normalIndex in 0...vertexCount-1 {
             normals[normalIndex] = SCNVector3Make(0, 0, -1)
         }
@@ -172,9 +161,9 @@ public class RBTerrain: SCNNode {
         let uvData = NSData(bytes: uvList, length: uvList.count * sizeOfVecFloat)
         let uvSource = SCNGeometrySource(data: uvData as Data, semantic: SCNGeometrySource.Semantic.texcoord, vectorCount: uvList.count, usesFloatComponents: true, componentsPerVector: 2, bytesPerComponent: sizeOfFloat, dataOffset: 0, dataStride: sizeOfVecFloat)
         sources.append(uvSource)
-        
+
         let terrainGeometry = SCNGeometry(sources: sources, elements: elements)
-        
+
         let material = SCNMaterial()
         material.isLitPerPixel = true
         material.diffuse.magnificationFilter = .none
@@ -185,19 +174,18 @@ public class RBTerrain: SCNNode {
 
         terrainGeometry.firstMaterial = material
         terrainGeometry.firstMaterial!.isDoubleSided = true
-        
+
         _terrainGeometry = terrainGeometry
-        
+
         return terrainGeometry
     }
-    
-    // -------------------------------------------------------------------------
+
     // MARK: - Create terrain
-    
+
     public func create(withImage image: RBImage?) {
         let terrainNode = SCNNode(geometry: createGeometry())
         self.addChildNode(terrainNode)
-        
+
         if (image != nil) {
             self.texture = image
         }
@@ -205,36 +193,30 @@ public class RBTerrain: SCNNode {
             self.color = RBColor.green
         }
     }
-    
-    // -------------------------------------------------------------------------
 
     public func create(withColor color: RBColor) {
         let terrainNode = SCNNode(geometry: createGeometry())
         self.addChildNode(terrainNode)
-        
+
         self.color = color
     }
 
-    // -------------------------------------------------------------------------
     // MARK: - Initialisation
-    
+
     public override init() {
         super.init()
     }
-    
+
     public convenience init(width: Int, length: Int, scale: Int) {
         self.init()
-        
+
         _terrainWidth = width
         _terrainLength = length
         _heightScale = scale
     }
 
-    // -------------------------------------------------------------------------
-
     required public init(coder: NSCoder) {
         fatalError("Not yet implemented")
     }
 
-    // -------------------------------------------------------------------------
 }

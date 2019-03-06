@@ -11,8 +11,6 @@
 import SceneKit
 import RBSceneUIKit
 
-// -----------------------------------------------------------------------------
-
 class Player : SCNNode {
     private let lookAtForwardPosition = SCNVector3Make(0.0, 0.0, 1.0)
     private let cameraFowardPosition = SCNVector3(x: 0.8, y: 1, z: -0.5)
@@ -20,13 +18,12 @@ class Player : SCNNode {
     private var _lookAtNode: SCNNode?
     private var _cameraNode: SCNNode?
     private var _playerNode: SCNNode?
-    
-    // -------------------------------------------------------------------------
+
     // MARK: - Initialisation
-    
+
     override init() {
         super.init()
-        
+
         // Create player node
         let cubeGeometry = SCNBox(width: 0.5, height: 0.5, length: 0.5, chamferRadius: 0.0)
         _playerNode = SCNNode(geometry: cubeGeometry)
@@ -35,7 +32,7 @@ class Player : SCNNode {
 
         let colorMaterial = SCNMaterial()
         cubeGeometry.materials = [colorMaterial]
-        
+
         // Look at Node
         _lookAtNode = SCNNode()
         _lookAtNode!.position = lookAtForwardPosition
@@ -53,7 +50,7 @@ class Player : SCNNode {
         let constraint1 = SCNLookAtConstraint(target: _lookAtNode)
         constraint1.isGimbalLockEnabled = true
         _cameraNode!.constraints = [constraint1]
-        
+
         // Create a spotlight at the player
         let spotLight = SCNLight()
         spotLight.type = SCNLight.LightType.spot
@@ -79,13 +76,8 @@ class Player : SCNNode {
         lightNode.position = SCNVector3(x: 0, y: 10.00, z: -2)
         self.addChildNode(lightNode)
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     required init(coder: NSCoder) {
         fatalError("Not yet implemented")
     }
-    
-    // -------------------------------------------------------------------------    
-
 }

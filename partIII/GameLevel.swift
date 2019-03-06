@@ -12,8 +12,6 @@ import UIKit
 import SceneKit
 import RBSceneUIKit
 
-// -----------------------------------------------------------------------------
-
 class GameLevel: SCNScene, SCNSceneRendererDelegate, SCNPhysicsContactDelegate {
     private let levelWidth = 320
     private let levelLength = 640
@@ -28,7 +26,6 @@ class GameLevel: SCNScene, SCNSceneRendererDelegate, SCNPhysicsContactDelegate {
     // Part 3: Reference to the HUD
     private var _hud: HUD?
 
-    // -------------------------------------------------------------------------
     // MARK: - Properties
 
     var hud: HUD? {
@@ -40,20 +37,16 @@ class GameLevel: SCNScene, SCNSceneRendererDelegate, SCNPhysicsContactDelegate {
         }
     }
 
-    // -------------------------------------------------------------------------
     // MARK: - Input handling
-    
+
     func swipeLeft() {
         _player!.moveLeft()
     }
 
-    // -------------------------------------------------------------------------
-
     func swipeRight() {
         _player!.moveRight()
     }
-    
-    // -------------------------------------------------------------------------
+
     // MARK: - Physics delegate
 
     func collision(withRing ring: Ring) {
@@ -61,18 +54,16 @@ class GameLevel: SCNScene, SCNSceneRendererDelegate, SCNPhysicsContactDelegate {
         if ring.isHidden {
             return
         }
- 
+
         debugPrint("Collision width \(ring)")
 
         ring.isHidden = true
         _player!.roll()
-        
+
         touchedRings += 1
-        
+
         _hud?.points = touchedRings
     }
-
-    // -------------------------------------------------------------------------
 
     func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
         // Part 3: Physics delegate get called when objects collide
@@ -81,16 +72,15 @@ class GameLevel: SCNScene, SCNSceneRendererDelegate, SCNPhysicsContactDelegate {
         }
     }
 
-    // -------------------------------------------------------------------------
     // MARK: - Place objects
 
     private func addRings() {
         // Part 3: Add rings to the game level
         let space = levelLength / (numberOfRings+1)
-        
+
         for i in 1...numberOfRings {
             let ring = Ring()
-            
+
             var x: CGFloat = 160
             let rnd = RBRandom.integer(1, 3)
             if rnd == 1 {
@@ -99,62 +89,51 @@ class GameLevel: SCNScene, SCNSceneRendererDelegate, SCNPhysicsContactDelegate {
             else if rnd == 3 {
                 x = x + Player.moveOffset
             }
-            
+
             ring.position = SCNVector3(Int(x), 3, (i*space))
             self.rootNode.addChildNode(ring)
         }
     }
 
-    // -------------------------------------------------------------------------
-
     private func addPlayer() {
         _player = Player()
         _player!.position = SCNVector3(160, 4, 0)
         self.rootNode.addChildNode(_player!)
-        
+
         let moveAction = SCNAction.moveBy(x: 0, y: 0, z: CGFloat(levelLength)-10, duration: 60)
         _player!.runAction(moveAction)
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     private func addTerrain() {
         // Create terrain
         _terrain = RBTerrain(width: levelWidth, length: levelLength, scale: 128)
-        
+
         let generator = RBPerlinNoiseGenerator(seed: nil)
         _terrain?.formula = {(x: Int32, y: Int32) in
             return generator.valueFor(x: x, y: y)
         }
-        
+
         _terrain!.create(withImage: #imageLiteral(resourceName: "grass"))
         _terrain!.position = SCNVector3Make(0, 0, 0)
         self.rootNode.addChildNode(_terrain!)
     }
-    
-    // -------------------------------------------------------------------------
+
     // MARK: - Initialisation
-    
+
     func create() {
         addTerrain()
         addPlayer()
         addRings()
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     override init() {
         super.init()
-        
+
         self.physicsWorld.contactDelegate = self
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     required init(coder: NSCoder) {
         fatalError("Not yet implemented")
     }
-    
-    // -------------------------------------------------------------------------
-    
+
 }

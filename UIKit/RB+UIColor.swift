@@ -9,8 +9,6 @@
 import SceneKit
 import RBSceneUIKit
 
-// -----------------------------------------------------------------------------
-
 public let UIRedColorList:[UIColor] = [
     UIColor(hex: "#800000"),
     UIColor(hex: "#AA0000"),
@@ -18,8 +16,6 @@ public let UIRedColorList:[UIColor] = [
     UIColor(hex: "#FF0000"),
     UIColor(hex: "#FF2A2A")
 ]
-
-// -----------------------------------------------------------------------------
 
 public let UIPurpleColorList:[UIColor] = [
     UIColor(hex: "#660067"),
@@ -29,8 +25,6 @@ public let UIPurpleColorList:[UIColor] = [
     UIColor(hex: "#F0BCFF")
 ]
 
-// -----------------------------------------------------------------------------
-
 public let UINeonColorList:[UIColor] = [
     UIColor(hex: "#FF15AC"),
     UIColor(hex: "#FF6900"),
@@ -38,8 +32,6 @@ public let UINeonColorList:[UIColor] = [
     UIColor(hex: "#00FF01"),
     UIColor(hex: "#01E6f0")
 ]
-
-// -----------------------------------------------------------------------------
 
 public let UIGreenColorList:[UIColor] = [
     UIColor(hex: "#075907"),
@@ -49,8 +41,6 @@ public let UIGreenColorList:[UIColor] = [
     UIColor(hex: "#E5EB0B")
 ]
 
-// -----------------------------------------------------------------------------
-
 public let UIGrayColorList:[UIColor] = [
     UIColor(hex: "#C0CBCB"),
     UIColor(hex: "#CAC6BF"),
@@ -59,53 +49,49 @@ public let UIGrayColorList:[UIColor] = [
     UIColor(hex: "#C5C1B7"),
     UIColor(hex: "#78797D")
 ]
-
-// -----------------------------------------------------------------------------
 // MARK: - Hex support
 
 public extension UIColor {
-    
+
     public convenience init(hex: String) {
         var str = hex
-        
+
         if str.hasPrefix("#") {
             let index = str.index(str.startIndex, offsetBy: 1)
             str = String(str[index...])
         }
-        
+
         if (str.count == 6) {
             str = "\(str)ff"
         }
-        
+
         if str.count  == 8 {
             let scanner = Scanner(string: String(str))
             var hexNumber: UInt64 = 0
-            
+
             if scanner.scanHexInt64(&hexNumber) {
                 let r = (hexNumber & 0xff000000) >> 24
                 let g = (hexNumber & 0x00ff0000) >> 16
                 let b = (hexNumber & 0x0000ff00) >> 8
                 let a = (hexNumber & 0x000000ff)
-                
+
                 self.init(red: CGFloat(r)/255.0, green: CGFloat(g)/255.0, blue: CGFloat(b)/255.0, alpha: CGFloat(a)/255.0)
                 return
             }
         }
-        
+
         self.init(red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0)
     }
 }
-
-// -----------------------------------------------------------------------------
 // MARK: - Random colors
 
 public extension UIColor {
-    
+
     public static func random(list: [UIColor]) -> UIColor {
         let maxValue = list.count
         let rand = RBRandom.integer(0, maxValue-1)
-        
+
         return list[rand]
     }
-    
+
 }

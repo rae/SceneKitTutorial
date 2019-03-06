@@ -13,19 +13,17 @@ import SceneKit
 import RBSceneUIKit
 
 class GameViewController: UIViewController {
-
     private var _sceneView: SCNView!
     private var _level: GameLevel!
-   
-    // -------------------------------------------------------------------------
+
     // MARK: - ViewController life cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         _level = GameLevel()
         _level.create()
-        
+
         _sceneView = SCNView()
         _sceneView.scene = _level
         _sceneView.allowsCameraControl = false
@@ -34,7 +32,4 @@ class GameViewController: UIViewController {
         _sceneView!.debugOptions = .showWireframe
         self.view = _sceneView
     }
-
-    // -------------------------------------------------------------------------
-
 }

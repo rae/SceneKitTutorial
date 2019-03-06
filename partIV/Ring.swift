@@ -12,29 +12,24 @@
 import SceneKit
 import RBSceneUIKit
 
-// -----------------------------------------------------------------------------
-
 class Ring : GameObject {
-    
-    // -------------------------------------------------------------------------
+
     // MARK: - Propertiues
-    
+
     override var description: String {
         get {
             return "ring \(self.id)"
         }
     }
 
-    // -------------------------------------------------------------------------
     // MARK: - Actions
 
     override func hit() {
         self.state = .died
     }
 
-    // -------------------------------------------------------------------------
     // MARK: - Initialisation
-    
+
     override init() {
         super.init()
 
@@ -50,10 +45,10 @@ class Ring : GameObject {
         self.addChildNode(ringNode)
 
         ringNode.eulerAngles = SCNVector3(degreesToRadians(value: 90), 0, 0)
-        
+
         let action = SCNAction.rotateBy(x: 0, y: 0, z: degreesToRadians(value: 360), duration: 3.0)
         ringNode.runAction(SCNAction.repeatForever(action))
-        
+
         // Contact box
         let boxMaterial = SCNMaterial()
         boxMaterial.diffuse.contents = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.0)
@@ -65,17 +60,13 @@ class Ring : GameObject {
         contactBox.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
         contactBox.physicsBody?.categoryBitMask = Game.Physics.Categories.ring
         self.addChildNode(contactBox)
-        
+
         self.state = .alive
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     required init(coder: NSCoder) {
         fatalError("Not yet implemented")
     }
-    
-    // -------------------------------------------------------------------------
-    
+
 }
 

@@ -12,12 +12,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private var _window: UIWindow?
     private var _gameViewController: GameViewController?
-    
-    // ------------------------------------------------------------------------------
 
     func applicationDidFinishLaunching(_ application: UIApplication) {
         _gameViewController = GameViewController()
-        
+
         _window = UIWindow(frame: UIScreen.main.bounds)
         _window?.rootViewController = _gameViewController
         _window?.makeKeyAndVisible()

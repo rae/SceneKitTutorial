@@ -18,17 +18,14 @@ import RBSceneUIKit
 class HUD {
     private var _scene: SKScene!
     private let _points = SKLabelNode(text: "0 RINGS")
-    
-    // -------------------------------------------------------------------------
+
     // MARK: - Properties
-    
+
     var scene: SKScene {
         get {
             return _scene
         }
     }
-
-    // -------------------------------------------------------------------------
 
     var points: Int {
         get {
@@ -39,12 +36,11 @@ class HUD {
         }
     }
 
-    // -------------------------------------------------------------------------
     // MARK: - Initialisation
-    
+
     init(size: CGSize) {
         _scene = SKScene(size: size)
-    
+
         _points.position = CGPoint(x: size.width/2, y: size.height-50)
         _points.horizontalAlignmentMode = .center
         _points.fontName = "MarkerFelt-Wide"
@@ -52,13 +48,10 @@ class HUD {
         _points.fontColor = UIColor.white
         _scene.addChild(_points)
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init?(coder aDecoder: NSCoder) not implemented")
     }
-    
-    // -------------------------------------------------------------------------
+
 }
 

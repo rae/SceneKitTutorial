@@ -18,7 +18,7 @@ struct Game {
 
     struct Level {
         static let numberOfRings: Int = 10                  // Number of rings in level
-        
+
         static let width: CGFloat = 320                     // Terrain width
         static let length: CGFloat = 840                    // Terraiun length
         static let start: CGFloat = 100                     // Start of player
@@ -28,7 +28,7 @@ struct Game {
             static let end: CGFloat = 300                   // End of fog
         }
     }
-    
+
     struct Player {
         static let actionTime: TimeInterval = 10.0          // Time used for move actions
         static let leftRightMoveDistance: CGFloat = 6.0     // Left/Right distance take in time
@@ -43,13 +43,13 @@ struct Game {
         static let maximumLeft: Float = 360.0               // Maximum left
         static let maximumRight: Float = 30.0               // Maximum right
     }
-    
+
     struct Objects {
         static let offset: CGFloat = 15                     // Space between objects
     }
 
     struct Physics {
-        
+
         // Category bits used for physics handling
         struct Categories {
             static let player: Int = 0b00000001

@@ -13,11 +13,11 @@ import Foundation
     public typealias RBColor = NSColor
     public typealias RBImage = NSImage
     public typealias RBFloat = CGFloat
-    
+
 #else
     import UIKit
     public typealias RBColor = UIColor
     public typealias RBImage = UIImage
     public typealias RBFloat = Float
-    
+
 #endif

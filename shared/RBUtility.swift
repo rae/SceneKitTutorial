@@ -9,32 +9,25 @@
 import Foundation
 import CoreGraphics
 
-// -----------------------------------------------------------------------------
 // MARK: - Deg/Rad
 
 public func degreesToRadians(value: CGFloat) -> CGFloat {
     return value * .pi / 180.0
 }
 
-// -----------------------------------------------------------------------------
-
 public func radiansToDegrees(value: CGFloat) -> CGFloat {
     return value * 180.0 / .pi
 }
 
-// -----------------------------------------------------------------------------
-
 public typealias RunClosure = () -> ()
 
 public class Run {
-    
+
     public static func after(_ timeInterval: TimeInterval, _ closure: @escaping RunClosure) {
         let when = DispatchTime.now() + timeInterval
         DispatchQueue.main.asyncAfter(deadline: when) {
             closure()
         }
     }
-    
-}
 
-// -----------------------------------------------------------------------------
+}

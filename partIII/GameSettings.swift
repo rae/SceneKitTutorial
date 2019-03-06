@@ -15,14 +15,13 @@ import Foundation
 import RBSceneUIKit
 
 struct Game {
-    
+
     struct Physics {
-        
         // Category bits used for physics handling
         struct Categories {
             static let player: Int = 0b00000001
             static let ring: Int = 0b00000010
         }
-        
+
     }
 }

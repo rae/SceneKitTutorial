@@ -11,33 +11,28 @@
 import SceneKit
 import RBSceneUIKit
 
-// -----------------------------------------------------------------------------
-
 class Ring : GameObject {
     private var _number: SCNNode!
-    
-    // -------------------------------------------------------------------------
+
     // MARK: - Propertiues
-    
+
     override var description: String {
         get {
             return "ring \(self.id)"
         }
     }
 
-    // -------------------------------------------------------------------------
     // MARK: - Actions
 
     override func hit() {
         self.state = .died
-        
+
         _number.isHidden = false
         _number.removeAllActions()
     }
 
-    // -------------------------------------------------------------------------
     // MARK: - Initialisation
-    
+
     init(number: Int) {
         super.init()
 
@@ -53,10 +48,10 @@ class Ring : GameObject {
         self.addChildNode(ringNode)
 
         ringNode.eulerAngles = SCNVector3(degreesToRadians(value: 90), 0, 0)
-        
+
         let action1 = SCNAction.rotateBy(x: 0, y: 0, z: degreesToRadians(value: 360), duration: 3.0)
         ringNode.runAction(SCNAction.repeatForever(action1))
-        
+
         // Contact box
         let boxMaterial = SCNMaterial()
         boxMaterial.diffuse.contents = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.0)
@@ -68,7 +63,7 @@ class Ring : GameObject {
         contactBox.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
         contactBox.physicsBody?.categoryBitMask = Game.Physics.Categories.ring
         self.addChildNode(contactBox)
-        
+
         // New in Part 5: Add a number to the ring
         let numberMaterial = SCNMaterial()
         numberMaterial.diffuse.contents = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
@@ -89,14 +84,8 @@ class Ring : GameObject {
         self.state = .alive
         self.points = Game.Points.ring
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     required init(coder: NSCoder) {
         fatalError("Not yet implemented")
     }
-    
-    // -------------------------------------------------------------------------
-    
 }
-

@@ -21,60 +21,44 @@ public extension Int {
 
 public class RBRandom {
     private let source = GKMersenneTwisterRandomSource()
-    
-    // -------------------------------------------------------------------------
+
     // MARK: - Get random numbers
-    
+
     public class func boolean() -> Bool {
         if RBRandom.sharedInstance.integer(0, 1) == 1 {
             return true
         }
-        
+
         return false
     }
-
-    // -------------------------------------------------------------------------
 
     public class func integer(_ from: Int, _ to: Int) -> Int {
         return RBRandom.sharedInstance.integer(from, to)
     }
 
-    // -------------------------------------------------------------------------
-    
     public class func timeInterval(_ from: Int, _ to: Int) -> TimeInterval {
         return TimeInterval(RBRandom.sharedInstance.integer(from, to))
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     public class func cgFloat(_ from: CGFloat, _ to: CGFloat) -> CGFloat {
         return CGFloat(RBRandom.sharedInstance.integer(Int(from), Int(to)))
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     private func integer(_ from: Int, _ to: Int) -> Int {
         let rd = GKRandomDistribution(randomSource: self.source, lowestValue: from, highestValue: to)
         let number = rd.nextInt()
-        
+
         return number
     }
-    
-    // -------------------------------------------------------------------------
+
     // MARK: - Initialisation
-    
+
     public init() {
         source.seed = UInt64(CFAbsoluteTimeGetCurrent())
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     private static let sharedInstance : RBRandom = {
         let instance = RBRandom()
         return instance
     }()
-    
-    // -------------------------------------------------------------------------
-
 }
-

@@ -22,13 +22,13 @@ struct Game {
     }
 
     struct Physics {
-        
+
         // Category bits used for physics handling
         struct Categories {
             static let player: Int = 0b00000001
             static let ring:   Int = 0b00000010
             static let enemy:  Int = 0b00000100
         }
-        
+
     }
 }

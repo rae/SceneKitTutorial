@@ -14,13 +14,10 @@
 import SceneKit
 import RBSceneUIKit
 
-// -----------------------------------------------------------------------------
-
 class Ring : SCNNode {
-    
-    // -------------------------------------------------------------------------
+
     // MARK: - Initialisation
-    
+
     override init() {
         super.init()
 
@@ -36,10 +33,10 @@ class Ring : SCNNode {
         self.addChildNode(ringNode)
 
         ringNode.eulerAngles = SCNVector3(degreesToRadians(value: 90), 0, 0)
-        
+
         let action = SCNAction.rotateBy(x: 0, y: 0, z: degreesToRadians(value: 360), duration: 3.0)
         ringNode.runAction(SCNAction.repeatForever(action))
-        
+
         // Contact box
         let boxMaterial = SCNMaterial()
         boxMaterial.diffuse.contents = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.0)
@@ -52,14 +49,10 @@ class Ring : SCNNode {
         contactBox.physicsBody?.categoryBitMask = Game.Physics.Categories.ring
         self.addChildNode(contactBox)
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     required init(coder: NSCoder) {
         fatalError("Not yet implemented")
     }
-    
-    // -------------------------------------------------------------------------
-    
+
 }
 

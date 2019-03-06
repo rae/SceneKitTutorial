@@ -18,17 +18,14 @@ class HUD {
     private let _message = SKLabelNode(text: "")
     private let _info = SKLabelNode(text: "")
 
-    // -------------------------------------------------------------------------
     // MARK: - Properties
-    
+
     var scene: SKScene {
         get {
             return _scene
         }
     }
 
-    // -------------------------------------------------------------------------
-    
     var rings: Int {
         get {
             return 0
@@ -40,7 +37,7 @@ class HUD {
             else {
                 _rings.text = String(format: "%d RINGS", value)
             }
-            
+
             // New in Part 4: Animated HUD informations (check RB+SKAction.swift for details)
             let scaling: CGFloat = 3
             let action = SKAction.zoomWithNode(_rings, amount: CGPoint.make(scaling, scaling), oscillations: 1, duration: 0.5)
@@ -48,15 +45,13 @@ class HUD {
         }
     }
 
-    // -------------------------------------------------------------------------
-    
     var missedRings: Int {
         get {
             return 0
         }
         set(value) {
             _missedRings.text = String(format: "%d MISSED", value)
-            
+
             if value > 0 {
                 _missedRings.fontColor = UIColor.red
             }
@@ -70,36 +65,30 @@ class HUD {
         }
     }
 
-    // -------------------------------------------------------------------------
-    
     func message(_ str: String, information: String? = nil) {
         // New in Part 4: Used for game over and win messages
         _message.text = str
         _message.isHidden = false
-        
+
         let scaling: CGFloat = 10
         let action = SKAction.zoomWithNode(_message, amount: CGPoint.make(scaling, scaling), oscillations: 1, duration: 0.5)
         _message.run(action)
-        
+
         if information != nil {
             info(information!)
         }
     }
 
-    // -------------------------------------------------------------------------
-    
     func info(_ str: String) {
         // New in Part 4: Uses for additional info when show messages
 
         _info.text = str
         _info.isHidden = false
-        
+
         let scaling: CGFloat = 2
         let action = SKAction.zoomWithNode(_info, amount: CGPoint.make(scaling, scaling), oscillations: 1, duration: 0.5)
         _info.run(action)
     }
-
-    // -------------------------------------------------------------------------
 
     func reset() {
         // New in Part 4: Reset is needed whenever start the level
@@ -114,26 +103,25 @@ class HUD {
         _missedRings.text = "0 MISSED"
     }
 
-    // -------------------------------------------------------------------------
     // MARK: - Initialisation
-    
+
     init(size: CGSize) {
         _scene = SKScene(size: size)
-        
+
         _rings.position = CGPoint(x: 40, y: size.height-50)
         _rings.horizontalAlignmentMode = .left
         _rings.fontName = "MarkerFelt-Wide"
         _rings.fontSize = 30
         _rings.fontColor = UIColor.white
         _scene.addChild(_rings)
-        
+
         _missedRings.position = CGPoint(x: size.width-40, y: size.height-50)
         _missedRings.horizontalAlignmentMode = .right
         _missedRings.fontName = "MarkerFelt-Wide"
         _missedRings.fontSize = 30
         _missedRings.fontColor = UIColor.white
         _scene.addChild(_missedRings)
-        
+
         _message.position = CGPoint(x: size.width/2, y: size.height/2)
         _message.horizontalAlignmentMode = .center
         _message.fontName = "MarkerFelt-Wide"
@@ -141,7 +129,7 @@ class HUD {
         _message.fontColor = UIColor.white
         _message.isHidden = true
         _scene.addChild(_message)
-        
+
         _info.position = CGPoint(x: size.width/2, y: size.height/2-40)
         _info.horizontalAlignmentMode = .center
         _info.fontName = "MarkerFelt-Wide"
@@ -152,12 +140,9 @@ class HUD {
 
         reset()
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init?(coder aDecoder: NSCoder) not implemented")
     }
-    
-    // -------------------------------------------------------------------------
+
 }

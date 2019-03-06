@@ -12,16 +12,13 @@ import UIKit
 import SceneKit
 import RBSceneUIKit
 
-// -----------------------------------------------------------------------------
-
 class GameLevel: SCNScene, SCNSceneRendererDelegate, SCNPhysicsContactDelegate {
     private let levelWidth = 320
     private let levelLength = 320
-    
+
     private var _terrain: RBTerrain?
     private var _player: Player?
 
-    // -------------------------------------------------------------------------
     // MARK: - Place objects
 
     private func addPlayer() {
@@ -32,8 +29,6 @@ class GameLevel: SCNScene, SCNSceneRendererDelegate, SCNPhysicsContactDelegate {
         let moveAction = SCNAction.moveBy(x: 0, y: 0, z: 200, duration: 20)
         _player!.runAction(moveAction)
     }
-
-    // -------------------------------------------------------------------------
 
     private func addTerrain() {
         // Create terrain
@@ -49,26 +44,19 @@ class GameLevel: SCNScene, SCNSceneRendererDelegate, SCNPhysicsContactDelegate {
         self.rootNode.addChildNode(_terrain!)
     }
 
-    // -------------------------------------------------------------------------
     // MARK: - Initialisation
-    
+
     func create() {
         addTerrain()
         addPlayer()
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     override init() {
         super.init()
     }
-    
-    // -------------------------------------------------------------------------
-    
+
     required init(coder: NSCoder) {
         fatalError("Not yet implemented")
     }
-    
-    // -------------------------------------------------------------------------
-    
+
 }
