@@ -14,19 +14,19 @@ import RBSceneUIKit
 struct Game {
 
     struct Points {
-        static let ring: Int = 200                          // Points get when fly trough a ring
-        static let enemy: Int = 100                         // Points get when shoot a enemy plane
-        static let handicap: Int = 50                       // Points get when shoot a handicap
+        static let ring = 200                          // Points get when fly trough a ring
+        static let enemy = 100                         // Points get when shoot a enemy plane
+        static let handicap = 50                       // Points get when shoot a handicap
     }
 
     struct Bullets {
-        static let player: Int = Int.max                    // Number of bullets player has initially
-        static let enemy: Int = 1                           // Number of bullets an enemy plane has initially
+        static let player = Int.max                    // Number of bullets player has initially
+        static let enemy = 1                           // Number of bullets an enemy plane has initially
     }
 
     struct Level {
-        static let numberOfRings: Int = 10                  // Number of rings in level
-        static let numberOfEnemies: Int = 20                // Number of enemy planes in level
+        static let numberOfRings = 10                  // Number of rings in level
+        static let numberOfEnemies = 20                // Number of enemy planes in level
 
         static let width: CGFloat = 640                     // Terrain width
         static let length: CGFloat = 960                    // Terraiun length
@@ -64,10 +64,10 @@ struct Game {
 
         // Category bits used for physics handling
         struct Categories {
-            static let player: Int = 0b00000001
+            static let player = 0b00000001
             static let ring:   Int = 0b00000010
             static let enemy:  Int = 0b00000100
-            static let bullet: Int = 0b00001000
+            static let bullet = 0b00001000
         }
     }
 

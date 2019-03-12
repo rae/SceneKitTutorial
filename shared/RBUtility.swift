@@ -22,7 +22,6 @@ public func radiansToDegrees(value: CGFloat) -> CGFloat {
 public typealias RunClosure = () -> ()
 
 public class Run {
-
     public static func after(_ timeInterval: TimeInterval, _ closure: @escaping RunClosure) {
         let when = DispatchTime.now() + timeInterval
         DispatchQueue.main.asyncAfter(deadline: when) {

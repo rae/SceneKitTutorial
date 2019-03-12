@@ -17,7 +17,7 @@ import RBSceneUIKit
 struct Game {
 
     struct Level {
-        static let numberOfRings: Int = 10                  // Number of rings in level
+        static let numberOfRings = 10                  // Number of rings in level
 
         static let width: CGFloat = 320                     // Terrain width
         static let length: CGFloat = 840                    // Terraiun length
@@ -52,7 +52,7 @@ struct Game {
 
         // Category bits used for physics handling
         struct Categories {
-            static let player: Int = 0b00000001
+            static let player = 0b00000001
             static let ring:   Int = 0b00000010
             static let enemy:  Int = 0b00000100
         }

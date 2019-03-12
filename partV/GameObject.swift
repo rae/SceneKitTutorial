@@ -19,12 +19,10 @@ enum GameObjecState {
 }
 
 class GameObject : SCNNode {
-    private static var count: Int = 0
+    private static var count = 0
     static var level: GameLevel?
 
-    private var _internalID: Int = 0
-    private var _tag = 0
-    private var _state = GameObjecState.initialized
+    private var internalID = 0
 
     // MARK: - Propertiues
 
@@ -35,25 +33,14 @@ class GameObject : SCNNode {
     }
 
     var id: Int {
-        return _internalID
+        return internalID
     }
 
-    var tag: Int {
-        get {
-            return _tag
-        }
-        set(value) {
-            _tag = value
-        }
-    }
+    var tag = 0
 
-    var state: GameObjecState {
-        get {
-            return _state
-        }
-        set(value) {
-            rbDebug("State of \(self) changed from \(_state) to \(value)")
-            _state = value
+    var state: GameObjecState  = GameObjecState.initialized {
+        didSet {
+            rbDebug("State of \(self) changed from \(oldValue) to \(state)")
         }
     }
 
@@ -94,7 +81,7 @@ class GameObject : SCNNode {
         super.init()
 
         GameObject.count += 1
-        _internalID = GameObject.count
+        internalID = GameObject.count
     }
 
     required init?(coder aDecoder: NSCoder) {

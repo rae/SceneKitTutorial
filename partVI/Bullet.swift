@@ -16,29 +16,23 @@ class Bullet : GameObject {
     private static let speedDistance: CGFloat = 80.0    // Distance taken in time
     private static let lifeTime: TimeInterval = 3.0     // Life time of a bullet in s
 
-    private var _enemy = false                          // Bullet show by player/enemy
-    private var _speed: CGFloat = 2.0                   // Speed of th ebullet
+    private var speed: CGFloat = 2.0                   // Speed of th ebullet
 
-    private var _bulletNode: SCNNode!
+    private var bulletNode: SCNNode!
 
     // MARK: - Getter/Setter
 
-    var enemy: Bool {
-        get {
-            return _enemy
-        }
-        set(value) {
-            _enemy = value
-
-            if (_enemy) {
-                _bulletNode.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
-                _bulletNode.physicsBody!.categoryBitMask = Game.Physics.Categories.bullet
-                _bulletNode.physicsBody!.contactTestBitMask = Game.Physics.Categories.player
+    var enemy = false {
+        didSet {
+            if (enemy) {
+                bulletNode.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
+                bulletNode.physicsBody!.categoryBitMask = Game.Physics.Categories.bullet
+                bulletNode.physicsBody!.contactTestBitMask = Game.Physics.Categories.player
             }
             else {
-                _bulletNode.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
-                _bulletNode.physicsBody!.categoryBitMask = Game.Physics.Categories.bullet
-                _bulletNode.physicsBody!.contactTestBitMask = Game.Physics.Categories.enemy
+                bulletNode.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
+                bulletNode.physicsBody!.categoryBitMask = Game.Physics.Categories.bullet
+                bulletNode.physicsBody!.contactTestBitMask = Game.Physics.Categories.enemy
             }
         }
     }
@@ -61,17 +55,17 @@ class Bullet : GameObject {
 
         self.state = .alive
 
-        _speed = speed
+        self.speed = speed
 
         switch (direction) {
         case .up:
-            moveAction = SCNAction.moveBy(x: sideDistance, y: fallDistance, z: Bullet.speedDistance, duration: TimeInterval(10/_speed))
+            moveAction = SCNAction.moveBy(x: sideDistance, y: fallDistance, z: Bullet.speedDistance, duration: TimeInterval(10/speed))
         case .down:
-            moveAction = SCNAction.moveBy(x: -sideDistance, y: fallDistance, z: -Bullet.speedDistance, duration: TimeInterval(10/_speed))
+            moveAction = SCNAction.moveBy(x: -sideDistance, y: fallDistance, z: -Bullet.speedDistance, duration: TimeInterval(10/speed))
         case .left:
-            moveAction = SCNAction.moveBy(x: Bullet.speedDistance, y: fallDistance, z: 0, duration: TimeInterval(10/_speed))
+            moveAction = SCNAction.moveBy(x: Bullet.speedDistance, y: fallDistance, z: 0, duration: TimeInterval(10/speed))
         case .right:
-            moveAction = SCNAction.moveBy(x: -Bullet.speedDistance, y: fallDistance, z: 0, duration: TimeInterval(10/_speed))
+            moveAction = SCNAction.moveBy(x: -Bullet.speedDistance, y: fallDistance, z: 0, duration: TimeInterval(10/speed))
 
         default:
             return
@@ -149,9 +143,9 @@ class Bullet : GameObject {
         material.diffuse.contents = UIColor.white
         let geometry = SCNBox(width: 0.2, height: 0.2, length: 0.2, chamferRadius: 0.0)
 
-        _bulletNode = SCNNode(geometry: geometry)
+        bulletNode = SCNNode(geometry: geometry)
 
-        self.addChildNode(_bulletNode)
+        self.addChildNode(bulletNode)
 
         self.enemy = enemy
 

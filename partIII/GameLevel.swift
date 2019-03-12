@@ -16,35 +16,25 @@ class GameLevel: SCNScene, SCNSceneRendererDelegate, SCNPhysicsContactDelegate {
     private let levelWidth = 320
     private let levelLength = 640
 
-    private var _terrain: RBTerrain?
-    private var _player: Player?
+    private var terrain: RBTerrain?
+    private var player: Player?
 
     // Part 3: Number od rings and touched rings saved here
     private let numberOfRings = 10
     private var touchedRings = 0
 
-    // Part 3: Reference to the HUD
-    private var _hud: HUD?
-
     // MARK: - Properties
 
-    var hud: HUD? {
-        get {
-            return _hud
-        }
-        set(value) {
-            _hud = value
-        }
-    }
+    var hud: HUD?
 
     // MARK: - Input handling
 
     func swipeLeft() {
-        _player!.moveLeft()
+        player!.moveLeft()
     }
 
     func swipeRight() {
-        _player!.moveRight()
+        player!.moveRight()
     }
 
     // MARK: - Physics delegate
@@ -58,11 +48,11 @@ class GameLevel: SCNScene, SCNSceneRendererDelegate, SCNPhysicsContactDelegate {
         debugPrint("Collision width \(ring)")
 
         ring.isHidden = true
-        _player!.roll()
+        player!.roll()
 
         touchedRings += 1
 
-        _hud?.points = touchedRings
+        hud?.points = touchedRings
     }
 
     func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
@@ -96,26 +86,26 @@ class GameLevel: SCNScene, SCNSceneRendererDelegate, SCNPhysicsContactDelegate {
     }
 
     private func addPlayer() {
-        _player = Player()
-        _player!.position = SCNVector3(160, 4, 0)
-        self.rootNode.addChildNode(_player!)
+        player = Player()
+        player!.position = SCNVector3(160, 4, 0)
+        self.rootNode.addChildNode(player!)
 
         let moveAction = SCNAction.moveBy(x: 0, y: 0, z: CGFloat(levelLength)-10, duration: 60)
-        _player!.runAction(moveAction)
+        player!.runAction(moveAction)
     }
 
     private func addTerrain() {
         // Create terrain
-        _terrain = RBTerrain(width: levelWidth, length: levelLength, scale: 128)
+        terrain = RBTerrain(width: levelWidth, length: levelLength, scale: 128)
 
         let generator = RBPerlinNoiseGenerator(seed: nil)
-        _terrain?.formula = {(x: Int32, y: Int32) in
+        terrain?.formula = {(x: Int32, y: Int32) in
             return generator.valueFor(x: x, y: y)
         }
 
-        _terrain!.create(withImage: #imageLiteral(resourceName: "grass"))
-        _terrain!.position = SCNVector3Make(0, 0, 0)
-        self.rootNode.addChildNode(_terrain!)
+        terrain!.create(withImage: #imageLiteral(resourceName: "grass"))
+        terrain!.position = SCNVector3Make(0, 0, 0)
+        self.rootNode.addChildNode(terrain!)
     }
 
     // MARK: - Initialisation

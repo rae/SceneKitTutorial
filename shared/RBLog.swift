@@ -17,18 +17,9 @@ enum RBLogSeverity : Int {
 }
 
 class RBLog: NSObject {
-    static var _severity = RBLogSeverity.debug
 
     // MARK: - Properties
-
-    static var severity: RBLogSeverity {
-        get {
-            return _severity
-        }
-        set(value) {
-            _severity = value
-        }
-    }
+    static var severity = RBLogSeverity.debug
 
     // MARK: - Logging severity
 

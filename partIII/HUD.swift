@@ -16,37 +16,29 @@ import SpriteKit
 import RBSceneUIKit
 
 class HUD {
-    private var _scene: SKScene!
-    private let _points = SKLabelNode(text: "0 RINGS")
+    private let pointsNode = SKLabelNode(text: "0 RINGS")
 
     // MARK: - Properties
 
-    var scene: SKScene {
-        get {
-            return _scene
-        }
-    }
+    private(set) var scene: SKScene!
 
-    var points: Int {
-        get {
-            return 0
-        }
-        set(value) {
-            _points.text = String(format: "%d RINGS", value)
+    var points = 0 {
+        didSet {
+            pointsNode.text = String(format: "%d RINGS", points)
         }
     }
 
     // MARK: - Initialisation
 
     init(size: CGSize) {
-        _scene = SKScene(size: size)
+        scene = SKScene(size: size)
 
-        _points.position = CGPoint(x: size.width/2, y: size.height-50)
-        _points.horizontalAlignmentMode = .center
-        _points.fontName = "MarkerFelt-Wide"
-        _points.fontSize = 30
-        _points.fontColor = UIColor.white
-        _scene.addChild(_points)
+        pointsNode.position = CGPoint(x: size.width/2, y: size.height-50)
+        pointsNode.horizontalAlignmentMode = .center
+        pointsNode.fontName = "MarkerFelt-Wide"
+        pointsNode.fontSize = 30
+        pointsNode.fontColor = UIColor.white
+        scene.addChild(pointsNode)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -54,4 +46,3 @@ class HUD {
     }
 
 }
-

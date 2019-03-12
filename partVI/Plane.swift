@@ -19,16 +19,7 @@ enum PlaneDirection {
 }
 
 class Plane : GameObject {
-    private var _modelNode: SCNNode?
-    private var _collissionNode: SCNNode?
-
-    private var _upDownDirection: PlaneDirection = .none       // Vertical direction
-    private var _leftRightDirection: PlaneDirection = .none    // Side direction
-
-    private var _speedDistance = Game.Plane.speedDistance      // The speed
-    private var _flip = false                                  // If true then fly opposite direction
-
-    private var _numberOfBullets = 0                           // Number of bullets available
+    private var speedDistance = Game.Plane.speedDistance      // The speed
 
     // MARK: - Propertiues
 
@@ -38,55 +29,29 @@ class Plane : GameObject {
         }
     }
 
-    var leftRightDirection: PlaneDirection {
-        get {
-            return _leftRightDirection
-        }
-    }
+    private(set) var leftRightDirection: PlaneDirection = .none
 
-    var upDownDirection: PlaneDirection {
-        get {
-            return _upDownDirection
-        }
-    }
+    private(set) var upDownDirection: PlaneDirection = .none
 
-    var modelNode: SCNNode? {
-        get {
-            return _modelNode
-        }
-    }
+    private(set) var modelNode: SCNNode?
+    private(set) var collissionNode: SCNNode?
 
-    var collissionNode: SCNNode? {
-        get {
-            return _collissionNode
-        }
-    }
-
-    var flip: Bool {
-        get {
-            return _flip
-        }
-        set(value) {
-            _flip = value
-
-            if _flip {
-                _speedDistance = -1*Game.Plane.speedDistance
-                _modelNode?.eulerAngles = SCNVector3(0, degreesToRadians(value: 180.0), 0)
+    var flip = false {
+        didSet {
+            if flip {
+                speedDistance = -1*Game.Plane.speedDistance
+                modelNode?.eulerAngles = SCNVector3(0, degreesToRadians(value: 180.0), 0)
             }
             else {
-                _speedDistance = Game.Plane.speedDistance
-                _modelNode?.eulerAngles = SCNVector3(0, 0, 0)
+                speedDistance = Game.Plane.speedDistance
+                modelNode?.eulerAngles = SCNVector3(0, 0, 0)
             }
         }
     }
 
-    var numberOfBullets: Int {
-        get {
-            return _numberOfBullets
-        }
-        set(value) {
-            _numberOfBullets = value
-            rbDebug("\(self) has \(_numberOfBullets) bullets left")
+    var numberOfBullets = 0 {
+        didSet {
+            rbDebug("\(self) has \(numberOfBullets) bullets left")
         }
     }
 
@@ -102,14 +67,14 @@ class Plane : GameObject {
         }
 
         // New in Part 5: We control minimum/maximum height
-        if (_upDownDirection == .down) {
+        if (upDownDirection == .down) {
             if (self.position.y <= Game.Plane.minimumHeight) {
                 stopMovingUpDown()
             }
 
             eulerX = degreesToRadians(value: Game.Plane.upDownAngle)
         }
-        else if (_upDownDirection == .up) {
+        else if (upDownDirection == .up) {
             if (self.position.y >= Game.Plane.maximumHeight) {
                 stopMovingUpDown()
             }
@@ -118,14 +83,14 @@ class Plane : GameObject {
         }
 
         // New in Part 5: We control minimum/maximum left/right
-        if (_leftRightDirection == .left) {
+        if (leftRightDirection == .left) {
             if (self.position.x >= Game.Plane.maximumLeft) {
                 stopMovingLeftRight()
             }
 
             eulerZ = -degreesToRadians(value: Game.Plane.leftRightAngle)
         }
-        else if (_leftRightDirection == .right) {
+        else if (leftRightDirection == .right) {
             if (self.position.x <= Game.Plane.maximumRight) {
                 stopMovingLeftRight()
             }
@@ -136,7 +101,7 @@ class Plane : GameObject {
         SCNTransaction.begin()
         SCNTransaction.animationDuration = 1.0
 
-        _modelNode?.eulerAngles = SCNVector3(eulerX, eulerY, eulerZ)
+        modelNode?.eulerAngles = SCNVector3(eulerX, eulerY, eulerZ)
 
         SCNTransaction.commit()
     }
@@ -154,10 +119,10 @@ class Plane : GameObject {
         }
 
         self.state = .died
-        _modelNode?.isHidden = true
+        modelNode?.isHidden = true
 
         self.removeAllActions()
-        _modelNode?.removeAllActions()
+        modelNode?.removeAllActions()
 
         if let emitter = SCNParticleSystem(named: "art.scnassets/smoke.scnp", inDirectory: nil) {
             self.addParticleSystem(emitter)
@@ -167,73 +132,73 @@ class Plane : GameObject {
     // MARK: - New in Part 5: Move Actions
 
     func moveUp() {
-        if _upDownDirection == .none {
+        if upDownDirection == .none {
             let moveAction = SCNAction.moveBy(x: 0, y: Game.Plane.upDownMoveDistance, z: 0, duration: 0.5)
             self.runAction(SCNAction.repeatForever(moveAction), forKey: "upDownDirection")
 
-            _upDownDirection = .up
+            upDownDirection = .up
         }
-        else if (_upDownDirection == .down) {
+        else if (upDownDirection == .down) {
             self.removeAction(forKey: "upDownDirection")
 
-            _upDownDirection = .none
+            upDownDirection = .none
         }
     }
 
     func moveDown() {
-        if _upDownDirection == .none {
+        if upDownDirection == .none {
             let moveAction = SCNAction.moveBy(x: 0, y: -Game.Plane.upDownMoveDistance, z: 0, duration: 0.5)
             self.runAction(SCNAction.repeatForever(moveAction), forKey: "upDownDirection")
 
-            _upDownDirection = .down
+            upDownDirection = .down
         }
-        else if (_upDownDirection == .up) {
+        else if (upDownDirection == .up) {
             self.removeAction(forKey: "upDownDirection")
 
-            _upDownDirection = .none
+            upDownDirection = .none
         }
     }
 
     func stopMovingUpDown() {
         self.removeAction(forKey: "upDownDirection")
-        _upDownDirection = .none
+        upDownDirection = .none
     }
 
     func moveLeft() {
-        if _leftRightDirection == .none {
+        if leftRightDirection == .none {
             let moveAction = SCNAction.moveBy(x: Game.Plane.leftRightMoveDistance, y: 0.0, z: 0, duration: 0.5)
             self.runAction(SCNAction.repeatForever(moveAction), forKey: "leftRightDirection")
 
-            _leftRightDirection = .left
+            leftRightDirection = .left
         }
-        else if (_leftRightDirection == .right) {
+        else if (leftRightDirection == .right) {
             self.removeAction(forKey: "leftRightDirection")
 
-            _leftRightDirection = .none
+            leftRightDirection = .none
         }
     }
 
     func moveRight() {
-        if _leftRightDirection == .none {
+        if leftRightDirection == .none {
             let moveAction = SCNAction.moveBy(x: -Game.Plane.leftRightMoveDistance, y: 0.0, z: 0, duration: 0.5)
             self.runAction(SCNAction.repeatForever(moveAction), forKey: "leftRightDirection")
 
-            _leftRightDirection = .right
+            leftRightDirection = .right
         }
-        else if (_leftRightDirection == .left) {
+        else if (leftRightDirection == .left) {
             self.removeAction(forKey: "leftRightDirection")
 
-            _leftRightDirection = .none
+            leftRightDirection = .none
         }
     }
 
     func stopMovingLeftRight() {
         self.removeAction(forKey: "leftRightDirection")
-        _leftRightDirection = .none
+        leftRightDirection = .none
     }
 
     override func start() {
-        let moveAction = SCNAction.moveBy(x: 0, y: 0, z: _speedDistance, duration: Game.Plane.actionTime)
+        let moveAction = SCNAction.moveBy(x: 0, y: 0, z: speedDistance, duration: Game.Plane.actionTime)
         let action = SCNAction.repeatForever(moveAction)
         self.runAction(action, forKey: "fly")
     }
@@ -249,15 +214,15 @@ class Plane : GameObject {
             fatalError("Scene not loaded")
         }
 
-        _modelNode = scene!.rootNode.childNode(withName: "ship", recursively: true)
-        _modelNode?.name = "plane"
+        modelNode = scene!.rootNode.childNode(withName: "ship", recursively: true)
+        modelNode?.name = "plane"
 
-        if (_modelNode == nil) {
+        if (modelNode == nil) {
             fatalError("Model node not found")
         }
 
-        _modelNode!.scale = SCNVector3(x: 0.25, y: 0.25, z: 0.25)
-        self.addChildNode(_modelNode!)
+        modelNode!.scale = SCNVector3(x: 0.25, y: 0.25, z: 0.25)
+        self.addChildNode(modelNode!)
 
         // Contact box
         // Part 3: Instead of use the plane itself we add a collision node to the player object
@@ -267,12 +232,12 @@ class Plane : GameObject {
         let box = SCNBox(width: 2.0, height: 1.0, length: 1.0, chamferRadius: 0.0)
         box.materials = [boxMaterial]
 
-        _collissionNode = SCNNode(geometry: box)
-        _collissionNode!.name = "plane"
-        _collissionNode!.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
-        _collissionNode!.physicsBody?.categoryBitMask = Game.Physics.Categories.player
-        _collissionNode!.physicsBody!.contactTestBitMask = Game.Physics.Categories.ring | Game.Physics.Categories.enemy
-        self.addChildNode(_collissionNode!)
+        collissionNode = SCNNode(geometry: box)
+        collissionNode!.name = "plane"
+        collissionNode!.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
+        collissionNode!.physicsBody?.categoryBitMask = Game.Physics.Categories.player
+        collissionNode!.physicsBody!.contactTestBitMask = Game.Physics.Categories.ring | Game.Physics.Categories.enemy
+        self.addChildNode(collissionNode!)
     }
 
     required init(coder: NSCoder) {

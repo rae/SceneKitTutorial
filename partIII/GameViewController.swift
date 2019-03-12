@@ -14,17 +14,17 @@ import RBSceneUIKit
 
 class GameViewController: UIViewController {
 
-    private var _sceneView: SCNView!
-    private var _level: GameLevel!
+    private var sceneView: SCNView!
+    private var level: GameLevel!
 
     // MARK: - Swipe gestures
 
     @objc private func handleSwipe(_ gestureRecognize: UISwipeGestureRecognizer) {
         if (gestureRecognize.direction == .left) {
-            _level!.swipeLeft()
+            level!.swipeLeft()
         }
         else if (gestureRecognize.direction == .right) {
-            _level!.swipeRight()
+            level!.swipeRight()
         }
     }
 
@@ -35,29 +35,29 @@ class GameViewController: UIViewController {
 
         // Part 3: HUD is created and assigned to view and game level
         let hud = HUD(size: self.view.bounds.size)
-        _level.hud = hud
-        _sceneView.overlaySKScene = hud.scene
+        level.hud = hud
+        sceneView.overlaySKScene = hud.scene
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        _level = GameLevel()
-        _level.create()
+        level = GameLevel()
+        level.create()
 
-        _sceneView = SCNView()
-        _sceneView.scene = _level
-        _sceneView.allowsCameraControl = false
-        _sceneView.showsStatistics = true
-        _sceneView.backgroundColor = UIColor.black
-        self.view = _sceneView
+        sceneView = SCNView()
+        sceneView.scene = level
+        sceneView.allowsCameraControl = false
+        sceneView.showsStatistics = true
+        sceneView.backgroundColor = UIColor.black
+        self.view = sceneView
 
         let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe))
         swipeLeftGesture.direction = .left
-        _sceneView!.addGestureRecognizer(swipeLeftGesture)
+        sceneView!.addGestureRecognizer(swipeLeftGesture)
 
         let swipeRightGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe))
         swipeRightGesture.direction = .right
-        _sceneView!.addGestureRecognizer(swipeRightGesture)
+        sceneView!.addGestureRecognizer(swipeRightGesture)
     }
 }

@@ -17,9 +17,9 @@ class Player : GameObject {
     private let lookAtForwardPosition = SCNVector3Make(0.0, -1.0, 6.0)
     private let cameraFowardPosition = SCNVector3(x: 0, y: 1.0, z: -5)
 
-    private var _lookAtNode: SCNNode?
-    private var _cameraNode: SCNNode?
-    private var _playerNode: SCNNode?
+    private var lookAtNode: SCNNode?
+    private var cameraNode: SCNNode?
+    private var playerNode: SCNNode?
 
     // MARK: - Propertiues
 
@@ -58,22 +58,22 @@ class Player : GameObject {
         }
 
         self.state = .died
-        _playerNode?.isHidden = true
+        playerNode?.isHidden = true
 
         self.removeAllActions()
-        _playerNode?.removeAllActions()
+        playerNode?.removeAllActions()
     }
 
     func roll() {
         // Part 3: An easy effect we use, whenever we fly trough a ring
         let rotateAction = SCNAction.rotateBy(x: 0, y: 0, z: -degreesToRadians(value: 360.0), duration: 0.5)
-        _playerNode!.runAction(rotateAction)
+        playerNode!.runAction(rotateAction)
     }
 
     // MARK: - Camera adjustment
 
     private func toggleCamera() {
-        var position = _cameraNode!.position
+        var position = cameraNode!.position
 
         if position.x < 0 {
             position.x = 0.5
@@ -85,7 +85,7 @@ class Player : GameObject {
         SCNTransaction.begin()
         SCNTransaction.animationDuration = 1.0
 
-        _cameraNode?.position = position
+        cameraNode?.position = position
 
         SCNTransaction.commit()
     }
@@ -99,7 +99,7 @@ class Player : GameObject {
         let rotateAction1 = SCNAction.rotateBy(x: 0, y: 0, z: -degreesToRadians(value: 15.0), duration: 0.25)
         let rotateAction2 = SCNAction.rotateBy(x: 0, y: 0, z: degreesToRadians(value: 15.0), duration: 0.25)
 
-        _playerNode!.runAction(SCNAction.sequence([rotateAction1, rotateAction2]))
+        playerNode!.runAction(SCNAction.sequence([rotateAction1, rotateAction2]))
 
         toggleCamera()
     }
@@ -111,7 +111,7 @@ class Player : GameObject {
         let rotateAction1 = SCNAction.rotateBy(x: 0, y: 0, z: degreesToRadians(value: 15.0), duration: 0.25)
         let rotateAction2 = SCNAction.rotateBy(x: 0, y: 0, z: -degreesToRadians(value: 15.0), duration: 0.25)
 
-        _playerNode!.runAction(SCNAction.sequence([rotateAction1, rotateAction2]))
+        playerNode!.runAction(SCNAction.sequence([rotateAction1, rotateAction2]))
 
         toggleCamera()
     }
@@ -127,15 +127,15 @@ class Player : GameObject {
             fatalError("Scene not loaded")
         }
 
-        _playerNode = scene!.rootNode.childNode(withName: "ship", recursively: true)
-        _playerNode?.name = "player"
+        playerNode = scene!.rootNode.childNode(withName: "ship", recursively: true)
+        playerNode?.name = "player"
 
-        if (_playerNode == nil) {
+        if (playerNode == nil) {
             fatalError("Ship node not found")
         }
 
-        _playerNode!.scale = SCNVector3(x: 0.25, y: 0.25, z: 0.25)
-        self.addChildNode(_playerNode!)
+        playerNode!.scale = SCNVector3(x: 0.25, y: 0.25, z: 0.25)
+        self.addChildNode(playerNode!)
 
         // Contact box
         // Part 3: Instead of use the plane itself we add a collision node to the player object
@@ -152,22 +152,22 @@ class Player : GameObject {
         self.addChildNode(contactBox)
 
             // Look at Node
-        _lookAtNode = SCNNode()
-        _lookAtNode!.position = lookAtForwardPosition
-        addChildNode(_lookAtNode!)
+        lookAtNode = SCNNode()
+        lookAtNode!.position = lookAtForwardPosition
+        addChildNode(lookAtNode!)
 
         // Camera Node
-        _cameraNode = SCNNode()
-        _cameraNode!.camera = SCNCamera()
-        _cameraNode!.position = cameraFowardPosition
-        _cameraNode!.camera!.zNear = 0.1
-        _cameraNode!.camera!.zFar = 200
-        self.addChildNode(_cameraNode!)
+        cameraNode = SCNNode()
+        cameraNode!.camera = SCNCamera()
+        cameraNode!.position = cameraFowardPosition
+        cameraNode!.camera!.zNear = 0.1
+        cameraNode!.camera!.zFar = 200
+        self.addChildNode(cameraNode!)
 
         // Link them
-        let constraint1 = SCNLookAtConstraint(target: _lookAtNode)
+        let constraint1 = SCNLookAtConstraint(target: lookAtNode)
         constraint1.isGimbalLockEnabled = true
-        _cameraNode!.constraints = [constraint1]
+        cameraNode!.constraints = [constraint1]
 
         // Create a spotlight at the player
         let spotLight = SCNLight()

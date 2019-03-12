@@ -12,12 +12,10 @@ import SceneKit
 public typealias RBTerrainFormula = ((Int32, Int32) -> (Double))
 
 public class RBTerrain: SCNNode {
-    private var _heightScale = 256
-    private var _terrainWidth = 32
-    private var _terrainLength = 32
-    private var _terrainGeometry: SCNGeometry?
-    private var _texture: RBImage?
-    private var _color = RBColor.white
+    private var heightScale = 256
+    private var terrainWidth = 32
+    private var terrainLength = 32
+    private var terrainGeometry: SCNGeometry?
 
     public var formula: RBTerrainFormula?
 
@@ -25,52 +23,42 @@ public class RBTerrain: SCNNode {
 
     public var length: Int {
         get {
-            return _terrainLength
+            return terrainLength
         }
     }
 
     public var width: Int {
         get {
-            return _terrainLength
+            return terrainLength
         }
     }
 
     public var texture: RBImage? {
-        get {
-            return _texture
-        }
-        set(value) {
-            _texture = value
-
-            if (_terrainGeometry != nil && _texture != nil) {
+        didSet {
+            if (terrainGeometry != nil && texture != nil) {
                 let material = SCNMaterial()
-                material.diffuse.contents = _texture!
+                material.diffuse.contents = texture!
                 material.isLitPerPixel = true
                 material.diffuse.magnificationFilter = .none
                 material.diffuse.wrapS = .repeat
                 material.diffuse.wrapT = .repeat
-                material.diffuse.contentsTransform = SCNMatrix4MakeScale(RBFloat(_terrainWidth*2), RBFloat(_terrainLength*2), 1)
+                material.diffuse.contentsTransform = SCNMatrix4MakeScale(RBFloat(terrainWidth*2), RBFloat(terrainLength*2), 1)
 
-                _terrainGeometry!.firstMaterial = material
-                _terrainGeometry!.firstMaterial!.isDoubleSided = true
+                terrainGeometry!.firstMaterial = material
+                terrainGeometry!.firstMaterial!.isDoubleSided = true
             }
         }
     }
 
-    public var color: RBColor {
-        get {
-            return _color
-        }
-        set(value) {
-            _color = value
-
-            if (_terrainGeometry != nil) {
+    public var color: RBColor = .white {
+        didSet {
+            if (terrainGeometry != nil) {
                 let material = SCNMaterial()
-                material.diffuse.contents = _color
+                material.diffuse.contents = color
                 material.isLitPerPixel = true
 
-                _terrainGeometry!.firstMaterial = material
-                _terrainGeometry!.firstMaterial!.isDoubleSided = true
+                terrainGeometry!.firstMaterial = material
+                terrainGeometry!.firstMaterial!.isDoubleSided = true
             }
         }
     }
@@ -94,14 +82,14 @@ public class RBTerrain: SCNNode {
         let vec2: vector_float2 = vector2(0, 0)
         let sizeOfVecFloat = MemoryLayout.size(ofValue: vec2)
 
-        let w: CGFloat = CGFloat(_terrainWidth)
-        let h: CGFloat = CGFloat(_terrainLength)
-        let scale: Double = Double(_heightScale)
+        let w: CGFloat = CGFloat(terrainWidth)
+        let h: CGFloat = CGFloat(terrainLength)
+        let scale: Double = Double(heightScale)
 
         var sources = [SCNGeometrySource]()
         var elements = [SCNGeometryElement]()
 
-        let maxElements: Int = _terrainWidth * _terrainLength * 4
+        let maxElements = terrainWidth * terrainLength * 4
         var vertices = [SCNVector3](repeating:SCNVector3Zero, count:maxElements)
         var normals = [SCNVector3](repeating:SCNVector3Zero, count:maxElements)
         var uvList: [vector_float2] = []
@@ -169,13 +157,13 @@ public class RBTerrain: SCNNode {
         material.diffuse.magnificationFilter = .none
         material.diffuse.wrapS = .repeat
         material.diffuse.wrapT = .repeat
-        material.diffuse.contentsTransform = SCNMatrix4MakeScale(RBFloat(_terrainWidth*2), RBFloat(_terrainLength*2), 1)
+        material.diffuse.contentsTransform = SCNMatrix4MakeScale(RBFloat(terrainWidth*2), RBFloat(terrainLength*2), 1)
         material.diffuse.intensity = 1.0
 
         terrainGeometry.firstMaterial = material
         terrainGeometry.firstMaterial!.isDoubleSided = true
 
-        _terrainGeometry = terrainGeometry
+        self.terrainGeometry = terrainGeometry
 
         return terrainGeometry
     }
@@ -210,9 +198,9 @@ public class RBTerrain: SCNNode {
     public convenience init(width: Int, length: Int, scale: Int) {
         self.init()
 
-        _terrainWidth = width
-        _terrainLength = length
-        _heightScale = scale
+        terrainWidth = width
+        terrainLength = length
+        heightScale = scale
     }
 
     required public init(coder: NSCoder) {

@@ -10,15 +10,15 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    private var _window: UIWindow?
-    private var _gameViewController: GameViewController?
+    private var window: UIWindow?
+    private var gameViewController: GameViewController?
 
     func applicationDidFinishLaunching(_ application: UIApplication) {
-        _gameViewController = GameViewController()
+        gameViewController = GameViewController()
 
-        _window = UIWindow(frame: UIScreen.main.bounds)
-        _window?.rootViewController = _gameViewController
-        _window?.makeKeyAndVisible()
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.rootViewController = gameViewController
+        window?.makeKeyAndVisible()
     }
 }
 

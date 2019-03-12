@@ -14,7 +14,7 @@ public class RBPerlinNoiseGenerator {
     private static let noiseY = 31337
     private static let noiseSeed = 1013
 
-    private var _seed: Int = 1
+    private var seed = 1
 
     private func interpolate(a: Double, b: Double, x: Double) ->Double {
         let ft: Double = x * Double.pi
@@ -26,7 +26,7 @@ public class RBPerlinNoiseGenerator {
     private func findNoise(x: Double, y: Double) ->Double {
         var n = (RBPerlinNoiseGenerator.noiseX*Int(x) +
                  RBPerlinNoiseGenerator.noiseY*Int(y) +
-                 RBPerlinNoiseGenerator.noiseSeed * _seed) & 0x7fffffff
+                 RBPerlinNoiseGenerator.noiseSeed * seed) & 0x7fffffff
 
         n = (n >> 13) ^ n
         n = (n &* (n &* n &* 60493 + 19990303) + 1376312589) & 0x7fffffff
@@ -80,9 +80,9 @@ public class RBPerlinNoiseGenerator {
 
     public init(seed: Int? = nil) {
         if let seed = seed {
-            _seed = seed
+            self.seed = seed
         } else {
-            _seed = Int(arc4random()) % Int(INT32_MAX)
+            self.seed = Int(arc4random()) % Int(INT32_MAX)
         }
     }
 }

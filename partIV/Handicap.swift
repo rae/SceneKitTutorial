@@ -15,8 +15,7 @@ import SceneKit
 import RBSceneUIKit
 
 class Handicap : GameObject {
-    private var _node: SCNNode!
-    private var _height: CGFloat = 0
+    private var node: SCNNode!
 
     // MARK: - Propertiues
 
@@ -26,11 +25,7 @@ class Handicap : GameObject {
         }
     }
 
-    var height: CGFloat {
-        get {
-            return _height
-        }
-    }
+    private(set) var height: CGFloat = 0
 
     // MARK: - Actions
 
@@ -42,10 +37,10 @@ class Handicap : GameObject {
         self.state = .died
 
         let action1 = SCNAction.moveBy(x: 0, y: -3, z: 0, duration: 0.15)
-        _node.runAction(action1)
+        node.runAction(action1)
 
         let action2 = SCNAction.rotateBy(x: degreesToRadians(value: 30), y: 0, z: degreesToRadians(value: 15), duration: 0.3)
-        _node.runAction(action2)
+        node.runAction(action2)
 
         if let emitter = SCNParticleSystem(named: "art.scnassets/fire.scnp", inDirectory: nil) {
             self.addParticleSystem(emitter)
@@ -62,27 +57,27 @@ class Handicap : GameObject {
         material.diffuse.contents = UIColor.random(list: UIGreenColorList)
 
         let width = RBRandom.cgFloat(4.0, 9.0)
-        _height = RBRandom.cgFloat(15.0, 25)
+        height = RBRandom.cgFloat(15.0, 25)
 
         var geometry: SCNGeometry!
         let rnd = RBRandom.integer(1, 3)
         if rnd == 1 {
-            geometry = SCNBox(width: width, height: _height, length: 2.0, chamferRadius: 0.0)
+            geometry = SCNBox(width: width, height: height, length: 2.0, chamferRadius: 0.0)
         }
         else if rnd == 2 {
-            geometry = SCNCylinder(radius: width, height: _height)
+            geometry = SCNCylinder(radius: width, height: height)
         }
         else {
-            geometry = SCNCone(topRadius: 0.0, bottomRadius: width, height: _height)
+            geometry = SCNCone(topRadius: 0.0, bottomRadius: width, height: height)
         }
 
         geometry.materials = [material]
 
-        _node = SCNNode(geometry: geometry)
-        _node.name = "handicap"
-        _node.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
-        _node.physicsBody?.categoryBitMask = Game.Physics.Categories.enemy
-        self.addChildNode(_node)
+        node = SCNNode(geometry: geometry)
+        node.name = "handicap"
+        node.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
+        node.physicsBody?.categoryBitMask = Game.Physics.Categories.enemy
+        self.addChildNode(node)
 
         self.state = .alive
     }

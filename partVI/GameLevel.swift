@@ -18,109 +18,89 @@ enum GameState {
 
 class GameLevel: SCNScene, SCNPhysicsContactDelegate {
     // New in Part 4: A list of all game objects
-    private var _gameObjects = Array<GameObject>()
+    private var gameObjects = Array<GameObject>()
 
     // New in Part 6: A list of all bullets
-    private var _bullets = Array<Bullet>()
+    private var bullets = Array<Bullet>()
 
-    private var _terrain: RBTerrain?
-    private var _player: Player?
-    private var _hud: HUD?
+    private var terrain: RBTerrain?
 
-    private var _touchedRings = 0
+    private var touchedRings = 0
 
     // New in Part 4: We catch now also the number of missed rings
-    private var _missedRings = 0
-
-    // New in Part 4: The game becomes differenr states
-    private var _state = GameState.initialized
+    private var missedRings = 0
 
     // MARK: - Properties
 
-    var hud: HUD? {
-        get {
-            return _hud
-        }
-        set(value) {
-            _hud = value
+    var hud: HUD?
+
+    var state = GameState.initialized {
+        didSet {
+            rbDebug("State of level changed from \(oldValue) to \(state)")
         }
     }
 
-    var state: GameState {
-        get {
-            return _state
-        }
-        set(value) {
-            rbDebug("State of level changed from \(_state) to \(value)")
-            _state = value
-        }
-    }
-
-    var player: Player? {
-        get {
-            return _player
-        }
-    }
+    private(set) var player: Player?
 
     // MARK: - New in Part 5: Motion handling
 
     func motionMoveUp() {
-        _player!.moveUp()
+        player!.moveUp()
     }
 
     func motionMoveDown() {
-        _player!.moveDown()
+        player!.moveDown()
     }
 
     func motionStopMovingUpDown() {
-        _player!.stopMovingUpDown()
+        player!.stopMovingUpDown()
     }
 
     func motionMoveLeft() {
-        _player!.moveLeft()
+        player!.moveLeft()
     }
 
     func motionMoveRight() {
-        _player!.moveRight()
+        player!.moveRight()
     }
 
     func motionStopMovingLeftRight() {
-        _player!.stopMovingLeftRight()
+        player!.stopMovingLeftRight()
     }
 
     // MARK: - Input handling
 
     func swipeLeft() {
-        _player!.moveLeft()
+        player!.moveLeft()
     }
 
     func swipeRight() {
-        _player!.moveRight()
+        player!.moveRight()
     }
 
     func swipeDown() {
-        _player!.moveDown()
+        player!.moveDown()
     }
 
     func swipeUp() {
-        _player!.moveUp()
+        player!.moveUp()
     }
 
     func fire() {
-        _player!.fire(self)
+        player!.fire(self)
     }
 
     // MARK: - Points system
 
     func addPoints(_ points: Int) {
-        _hud?.addPoints(points)
+        hud?.addPoints(points)
     }
 
     func fireBullet(enemy: Bool, position: SCNVector3, sideDistance: CGFloat = 0, fallDistance: CGFloat = 0) -> Bullet {
         let direction : PlaneDirection = enemy ? .down : .up
 
         // Search in list if we have an unused bullet
-        for bullet in _bullets {
+        for bullet in bullets {
             if (bullet.state == .died && bullet.enemy == enemy) {
                 // Ok, use this
                 bullet.isHidden = false
@@ -136,7 +116,7 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
 
         // No bullets free, so create one
         let bullet = Bullet(enemy: enemy)
-        _bullets.append(bullet)
+        bullets.append(bullet)
         self.rootNode.addChildNode(bullet)
 
         bullet.position = position
@@ -146,20 +126,20 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
     }
 
     func flyTrough(_ ring: Ring) {
-        _touchedRings += 1
-        _hud?.rings = _touchedRings
+        touchedRings += 1
+        hud?.rings = touchedRings
 
         self.addPoints(ring.points)
     }
 
     func touchedHandicap(_ handicap: Handicap) {
-        _hud?.message("GAME OVER", information: "- Touch to restart - ")
+        hud?.message("GAME OVER", information: "- Touch to restart - ")
 
         self.state = .loose
     }
 
     func crashed() {
-        _hud?.message("GAME OVER", information: "- Touch to restart - ")
+        hud?.message("GAME OVER", information: "- Touch to restart - ")
 
         self.state = .loose
     }
@@ -174,12 +154,12 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
 
         var missedRings = 0
 
-        for object in _gameObjects {
+        for object in gameObjects {
             object.update(atTime: time, level: self)
 
             // Check which rings are behind the player but still 'alive'
             if let ring = object as? Ring {
-                if (ring.presentation.position.z + 5.0) < _player!.presentation.position.z {
+                if (ring.presentation.position.z + 5.0) < player!.presentation.position.z {
                     if ring.state == .alive {
                         missedRings += 1
                     }
@@ -187,22 +167,22 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
             }
         }
 
-        if missedRings > _missedRings {
-            _missedRings = missedRings
-            _hud?.missedRings = _missedRings
+        if missedRings > self.missedRings {
+            self.missedRings = missedRings
+            hud?.missedRings = missedRings
         }
 
         // Test for end of game
-        if _missedRings + _touchedRings == Game.Level.numberOfRings {
-            if _missedRings < 3 {
-                _hud?.message("YOU WIN", information: "- Touch to restart - ")
+        if missedRings + touchedRings == Game.Level.numberOfRings {
+            if missedRings < 3 {
+                hud?.message("YOU WIN", information: "- Touch to restart - ")
             }
             else {
-                _hud?.message("TRY TO IMPROVE", information: "- Touch to restart - ")
+                hud?.message("TRY TO IMPROVE", information: "- Touch to restart - ")
             }
 
             self.state = .win
-            _player!.stop()
+            player!.stop()
         }
     }
 
@@ -239,7 +219,7 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
             ring.position = SCNVector3(Int(x), height, Int(Game.Level.start)+i*space)
             self.rootNode.addChildNode(ring)
 
-            _gameObjects.append(ring)
+            gameObjects.append(ring)
         }
     }
 
@@ -262,7 +242,7 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
             enemy.position = SCNVector3(Int(x), Int(Game.Plane.minimumHeight), Int(Game.Level.length/3)+i*space)
             self.rootNode.addChildNode(enemy)
 
-            _gameObjects.append(enemy)
+            gameObjects.append(enemy)
         }
     }
 
@@ -271,7 +251,7 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
         handicap.position = SCNVector3(x, handicap.height/2, z)
         self.rootNode.addChildNode(handicap)
 
-        _gameObjects.append(handicap)
+        gameObjects.append(handicap)
     }
 
     private func addHandicaps() {
@@ -300,26 +280,26 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
     }
 
     private func addPlayer() {
-        _player = Player()
+        player = Player()
 
-        _player!.position = SCNVector3(Game.Level.width/2, CGFloat(Game.Plane.minimumHeight), Game.Level.start)
-        self.rootNode.addChildNode(_player!)
+        player!.position = SCNVector3(Game.Level.width/2, CGFloat(Game.Plane.minimumHeight), Game.Level.start)
+        self.rootNode.addChildNode(player!)
 
-        _gameObjects.append(_player!)
+        gameObjects.append(player!)
     }
 
     private func addTerrain() {
         // Create terrain
-        _terrain = RBTerrain(width: Int(Game.Level.width), length: Int(Game.Level.length), scale: 96)
+        terrain = RBTerrain(width: Int(Game.Level.width), length: Int(Game.Level.length), scale: 96)
 
         let generator = RBPerlinNoiseGenerator(seed: nil)
-        _terrain?.formula = {(x: Int32, y: Int32) in
+        terrain?.formula = {(x: Int32, y: Int32) in
             return generator.valueFor(x: x, y: y)
         }
 
-        _terrain!.create(withImage: #imageLiteral(resourceName: "grass"))
-        _terrain!.position = SCNVector3Make(0, 0, 0)
-        self.rootNode.addChildNode(_terrain!)
+        terrain!.create(withImage: #imageLiteral(resourceName: "grass"))
+        terrain!.position = SCNVector3Make(0, 0, 0)
+        self.rootNode.addChildNode(terrain!)
     }
 
     private func addLights() {
@@ -334,7 +314,7 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
 
     func stop() {
         // New in Part 4: Stop all!
-        for object in _gameObjects {
+        for object in gameObjects {
             object.stop()
         }
 
@@ -346,9 +326,9 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
     func start() {
         if self.state == .ready {
             self.state = .play
-            _hud?.reset()
+            hud?.reset()
 
-            for object in _gameObjects {
+            for object in gameObjects {
                 object.start()
             }
         }

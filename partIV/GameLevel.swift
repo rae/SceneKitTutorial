@@ -17,7 +17,7 @@ import SceneKit
 import RBSceneUIKit
 
 enum GameState {
-    case initialized, play, win, loose, stopped
+    case initialized, play, win, lose, stopped
 }
 
 class GameLevel: SCNScene, SCNPhysicsContactDelegate {
@@ -25,81 +25,66 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
     private let levelLength = 640
 
     // New in Part 4: A list of all game objects
-    private var _gameObjects = Array<GameObject>()
+    private var gameObjects = Array<GameObject>()
 
-    private var _terrain: RBTerrain?
-    private var _player: Player?
-    private var _hud: HUD?
+    private var terrain: RBTerrain?
+    private var player: Player?
 
-    private let _numberOfRings = 10
-    private var _touchedRings = 0
+    private let numberOfRings = 10
+    private var touchedRings = 0
 
     // New in Part 4: We catch now also the number of missed rings
-    private var _missedRings = 0
-
-    // New in Part 4: The game becomes differenr states
-    private var _state = GameState.initialized
+    private var missedRings = 0
 
     // MARK: - Properties
 
-    var hud: HUD? {
-        get {
-            return _hud
-        }
-        set(value) {
-            _hud = value
-        }
-    }
+    var hud: HUD?
 
-    var state: GameState {
-        get {
-            return _state
-        }
-        set(value) {
-            rbDebug("State of level changed from \(_state) to \(value)")
-            _state = value
+    var state: GameState = GameState.initialized {
+        didSet {
+            rbDebug("State of level changed from \(oldValue) to \(state)")
         }
     }
 
     // MARK: - Input handling
 
     func swipeLeft() {
-        _player!.moveLeft()
+        player!.moveLeft()
     }
 
     func swipeRight() {
-        _player!.moveRight()
+        player!.moveRight()
     }
 
     // MARK: - Actions
 
     func flyTrough(_ ring: Ring) {
-        _touchedRings += 1
-        _hud?.rings = _touchedRings
+        touchedRings += 1
+        hud?.rings = touchedRings
     }
 
     func touchedHandicap(_ handicap: Handicap) {
-        _hud?.message("GAME OVER", information: "- Touch to restart - ")
+        hud?.message("GAME OVER", information: "- Touch to restart - ")
 
-        self.state = .loose
+        state = .lose
     }
 
     // MARK: - Game loop
 
     func update(atTime time: TimeInterval) {
         // New in Part 4: The game loop (see tutorial)
-        if self.state != .play {
+        if state != .play {
             return
         }
 
         var missedRings = 0
 
-        for object in _gameObjects {
+        for object in gameObjects {
             object.update(atTime: time, level: self)
 
             // Check which rings are behind the player but still 'alive'
             if let ring = object as? Ring {
-                if (ring.presentation.position.z + 5.0) < _player!.presentation.position.z {
+                if (ring.presentation.position.z + 5.0) < player!.presentation.position.z {
                     if ring.state == .alive {
                         missedRings += 1
                     }
@@ -107,21 +92,21 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
             }
         }
 
-        if missedRings > _missedRings {
-            _missedRings = missedRings
-            _hud?.missedRings = _missedRings
+        if missedRings > self.missedRings {
+            self.missedRings = missedRings
+            hud?.missedRings = missedRings
         }
 
         // Test for end of game
-        if _missedRings + _touchedRings == _numberOfRings {
-            if _missedRings < 3 {
-                _hud?.message("YOU WIN", information: "- Touch to restart - ")
+        if missedRings + touchedRings == numberOfRings {
+            if missedRings < 3 {
+                hud?.message("YOU WIN", information: "- Touch to restart - ")
             }
             else {
-                _hud?.message("TRY TO IMPROVE", information: "- Touch to restart - ")
+                hud?.message("TRY TO IMPROVE", information: "- Touch to restart - ")
             }
 
-            self.state = .win
+            state = .win
         }
     }
 
@@ -139,9 +124,9 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
 
     private func addRings() {
         // Part 3: Add rings to the game level
-        let space = levelLength / (_numberOfRings+1)
+        let space = levelLength / (numberOfRings+1)
 
-        for i in 1..._numberOfRings {
+        for i in 1...numberOfRings {
             let ring = Ring()
 
             var x: CGFloat = 160
@@ -156,7 +141,7 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
             ring.position = SCNVector3(Int(x), 3, (i*space))
             self.rootNode.addChildNode(ring)
 
-            _gameObjects.append(ring)
+            gameObjects.append(ring)
         }
     }
 
@@ -165,14 +150,14 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
         handicap.position = SCNVector3(x, handicap.height/2, z)
         self.rootNode.addChildNode(handicap)
 
-        _gameObjects.append(handicap)
+        gameObjects.append(handicap)
     }
 
     private func addHandicaps() {
         // Part 4: Add handicaps to the game level
-        let space: CGFloat = CGFloat(levelLength / (_numberOfRings+1))
+        let space: CGFloat = CGFloat(levelLength / (numberOfRings+1))
 
-        for i in 1..._numberOfRings-1 {
+        for i in 1...numberOfRings-1 {
             var x: CGFloat = 160
             let rnd = RBRandom.integer(1, 3)
 
@@ -194,43 +179,43 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
     }
 
     private func addPlayer() {
-        _player = Player()
-        _player!.state = .alive
+        player = Player()
+        player!.state = .alive
 
-        _player!.position = SCNVector3(160, 4, 0)
-        self.rootNode.addChildNode(_player!)
+        player!.position = SCNVector3(160, 4, 0)
+        self.rootNode.addChildNode(player!)
 
         let moveAction = SCNAction.moveBy(x: 0, y: 0, z: CGFloat(levelLength)-10, duration: 60)
-        _player!.runAction(moveAction)
+        player!.runAction(moveAction)
 
-        _gameObjects.append(_player!)
+        gameObjects.append(player!)
     }
 
     private func addTerrain() {
         // Create terrain
-        _terrain = RBTerrain(width: levelWidth, length: levelLength, scale: 128)
+        terrain = RBTerrain(width: levelWidth, length: levelLength, scale: 128)
 
         let generator = RBPerlinNoiseGenerator(seed: nil)
-        _terrain?.formula = {(x: Int32, y: Int32) in
+        terrain?.formula = {(x: Int32, y: Int32) in
             return generator.valueFor(x: x, y: y)
         }
 
-        _terrain!.create(withImage: #imageLiteral(resourceName: "grass"))
-        _terrain!.position = SCNVector3Make(0, 0, 0)
-        self.rootNode.addChildNode(_terrain!)
+        terrain!.create(withImage: #imageLiteral(resourceName: "grass"))
+        terrain!.position = SCNVector3Make(0, 0, 0)
+        self.rootNode.addChildNode(terrain!)
     }
 
     // MARK: - Stop
 
     func stop() {
         // New in Part 4: Stop all!
-        for object in _gameObjects {
+        for object in gameObjects {
             object.stop()
         }
 
         self.physicsWorld.contactDelegate = nil
         self.hud = nil
-        self.state = .stopped
+        state = .stopped
     }
 
     // MARK: - Initialisation
@@ -244,7 +229,7 @@ class GameLevel: SCNScene, SCNPhysicsContactDelegate {
         addHandicaps()
         addPlayer()
 
-        self.state = .play
+        state = .play
     }
 
     override init() {

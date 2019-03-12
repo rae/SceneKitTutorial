@@ -15,10 +15,10 @@ class Player : Plane {
     private let lookAtForwardPosition = SCNVector3Make(0.0, -1.0, 6.0)
     private let cameraFowardPosition = SCNVector3(x: 0, y: 1.0, z: -5)
 
-    private var _lookAtNode: SCNNode?
-    private var _cameraNode: SCNNode?
+    private var lookAtNode: SCNNode?
+    private var cameraNode: SCNNode?
 
-    private var _crashed = false
+    private var crashed = false
 
     // MARK: - Propertiues
 
@@ -65,7 +65,7 @@ class Player : Plane {
     }
 
     override func hit() {
-        if _crashed {
+        if crashed {
             return
         }
 
@@ -73,7 +73,7 @@ class Player : Plane {
             self.addParticleSystem(emitter)
         }
 
-        _crashed = true
+        crashed = true
 
         moveDown()
         moveDown()
@@ -89,7 +89,7 @@ class Player : Plane {
     // MARK: - Game loop
 
     override func update(atTime time: TimeInterval, level: GameLevel) {
-        if !_crashed {
+        if !crashed {
             super.update(atTime: time, level: level)
             return
         }
@@ -155,7 +155,7 @@ class Player : Plane {
 
     private func adjustCamera() {
         // New in Part 5: move the camera according to the fly direction
-        var position = _cameraNode!.position
+        var position = cameraNode!.position
 
         if (self.leftRightDirection == .left) {
             position.x = 1.0
@@ -170,7 +170,7 @@ class Player : Plane {
         SCNTransaction.begin()
         SCNTransaction.animationDuration = 1.0
 
-        _cameraNode?.position = position
+        cameraNode?.position = position
 
         SCNTransaction.commit()
     }
@@ -178,7 +178,7 @@ class Player : Plane {
     // MARK: - New in Part 5: Move Actions
 
     override func moveUp() {
-        if _crashed {
+        if crashed {
             return
         }
 
@@ -202,7 +202,7 @@ class Player : Plane {
     }
 
     override func stopMovingUpDown() {
-        if _crashed {
+        if crashed {
             return
         }
 
@@ -256,24 +256,24 @@ class Player : Plane {
         self.collissionNode!.physicsBody!.contactTestBitMask = Game.Physics.Categories.ring | Game.Physics.Categories.enemy
 
         // Look at Node
-        _lookAtNode = SCNNode()
-        _lookAtNode!.position = lookAtForwardPosition
-        addChildNode(_lookAtNode!)
+        lookAtNode = SCNNode()
+        lookAtNode!.position = lookAtForwardPosition
+        addChildNode(lookAtNode!)
 
         // Camera
         let camera = SCNCamera()
         camera.zNear = 0.1
         camera.zFar = 600
 
-        _cameraNode = SCNNode()
-        _cameraNode!.camera = camera
-        _cameraNode!.position = cameraFowardPosition
-        self.addChildNode(_cameraNode!)
+        cameraNode = SCNNode()
+        cameraNode!.camera = camera
+        cameraNode!.position = cameraFowardPosition
+        self.addChildNode(cameraNode!)
 
         // Link them
-        let constraint1 = SCNLookAtConstraint(target: _lookAtNode)
+        let constraint1 = SCNLookAtConstraint(target: lookAtNode)
         constraint1.isGimbalLockEnabled = true
-        _cameraNode!.constraints = [constraint1]
+        cameraNode!.constraints = [constraint1]
 
         // Create a spotlight at the player
         let spotLight = SCNLight()

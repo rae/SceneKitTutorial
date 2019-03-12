@@ -54,20 +54,20 @@ class GameSound {
 }
 
 class GameAudioPlayer : SCNAudioPlayer {
-    private var _node: SCNNode!
+    private var node: SCNNode!
 
     init(name: String, source: SCNAudioSource, node: SCNNode) {
         super.init(source: source)
 
         node.addAudioPlayer(self)
-        _node = node
+        self.node = node
 
         rbDebug("GameAudioPlayer: play \(name)")
 
         self.didFinishPlayback = {
             rbDebug("GameAudioPlayer: stopped \(name)")
 
-            self._node.removeAudioPlayer(self)
+            self.node.removeAudioPlayer(self)
         }
     }
 }

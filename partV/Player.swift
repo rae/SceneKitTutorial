@@ -20,13 +20,13 @@ class Player : GameObject {
     private let lookAtForwardPosition = SCNVector3Make(0.0, -1.0, 6.0)
     private let cameraFowardPosition = SCNVector3(x: 0, y: 1.0, z: -5)
 
-    private var _lookAtNode: SCNNode?
-    private var _cameraNode: SCNNode?
-    private var _playerNode: SCNNode?
+    private var lookAtNode: SCNNode?
+    private var cameraNode: SCNNode?
+    private var playerNode: SCNNode?
 
     // New in Part 5: We control the plane direction
-    private var _upDownDirection: PlayerDirection = .none       // Vertical direction
-    private var _leftRightDirection: PlayerDirection = .none    // Side direction
+    private var upDownDirection: PlayerDirection = .none       // Vertical direction
+    private var leftRightDirection: PlayerDirection = .none    // Side direction
 
     // MARK: - Propertiues
 
@@ -43,14 +43,14 @@ class Player : GameObject {
         var eulerZ: CGFloat = 0
 
         // New in Part 5: We control minimum/maximum height
-        if (_upDownDirection == .down) {
+        if (upDownDirection == .down) {
             if (self.position.y <= Game.Player.minimumHeight) {
                 stopMovingUpDown()
             }
 
             eulerX = degreesToRadians(value: Game.Player.upDownAngle)
         }
-        else if (_upDownDirection == .up) {
+        else if (upDownDirection == .up) {
             if (self.position.y >= Game.Player.maximumHeight) {
                 stopMovingUpDown()
             }
@@ -59,14 +59,14 @@ class Player : GameObject {
         }
 
         // New in Part 5: We control minimum/maximum left/right
-        if (_leftRightDirection == .left) {
+        if (leftRightDirection == .left) {
             if (self.position.x >= Game.Player.maximumLeft) {
                 stopMovingLeftRight()
             }
 
             eulerZ = -degreesToRadians(value: Game.Player.leftRightAngle)
         }
-        else if (_leftRightDirection == .right) {
+        else if (leftRightDirection == .right) {
             if (self.position.x <= Game.Player.maximumRight) {
                 stopMovingLeftRight()
             }
@@ -77,7 +77,7 @@ class Player : GameObject {
         SCNTransaction.begin()
         SCNTransaction.animationDuration = 1.0
 
-        _playerNode?.eulerAngles = SCNVector3(eulerX, 0, eulerZ)
+        playerNode?.eulerAngles = SCNVector3(eulerX, 0, eulerZ)
 
         SCNTransaction.commit()
     }
@@ -113,32 +113,32 @@ class Player : GameObject {
         }
 
         self.state = .died
-        _playerNode?.isHidden = true
+        playerNode?.isHidden = true
 
         self.removeAllActions()
-        _playerNode?.removeAllActions()
+        playerNode?.removeAllActions()
     }
 
     // MARK: - Camera adjustment
 
     private func adjustCamera() {
         // New in Part 5: move the camera according to the fly direction
-        var position = _cameraNode!.position
+        var position = cameraNode!.position
 
-        if (_leftRightDirection == .left) {
+        if (leftRightDirection == .left) {
             position.x = 1.0
         }
-        else if (_leftRightDirection == .right) {
+        else if (leftRightDirection == .right) {
             position.x = -1.0
         }
-        else if (_leftRightDirection == .none) {
+        else if (leftRightDirection == .none) {
             position.x = 0.1
         }
 
         SCNTransaction.begin()
         SCNTransaction.animationDuration = 1.0
 
-        _cameraNode?.position = position
+        cameraNode?.position = position
 
         SCNTransaction.commit()
     }
@@ -146,103 +146,103 @@ class Player : GameObject {
     // MARK: - New in Part 5: Move Actions
 
     func moveUp() {
-        let oldDirection = _upDownDirection
+        let oldDirection = upDownDirection
 
-        if _upDownDirection == .none {
+        if upDownDirection == .none {
             let moveAction = SCNAction.moveBy(x: 0, y: Game.Player.upDownMoveDistance, z: 0, duration: 0.5)
             self.runAction(SCNAction.repeatForever(moveAction), forKey: "upDownDirection")
 
-            _upDownDirection = .up
+            upDownDirection = .up
         }
-        else if (_upDownDirection == .down) {
+        else if (upDownDirection == .down) {
             self.removeAction(forKey: "upDownDirection")
 
-            _upDownDirection = .none
+            upDownDirection = .none
         }
 
-        if oldDirection != _upDownDirection {
+        if oldDirection != upDownDirection {
             adjustCamera()
         }
     }
 
     func moveDown() {
-        let oldDirection = _upDownDirection
+        let oldDirection = upDownDirection
 
-        if _upDownDirection == .none {
+        if upDownDirection == .none {
             let moveAction = SCNAction.moveBy(x: 0, y: -Game.Player.upDownMoveDistance, z: 0, duration: 0.5)
             self.runAction(SCNAction.repeatForever(moveAction), forKey: "upDownDirection")
 
-            _upDownDirection = .down
+            upDownDirection = .down
         }
-        else if (_upDownDirection == .up) {
+        else if (upDownDirection == .up) {
             self.removeAction(forKey: "upDownDirection")
 
-            _upDownDirection = .none
+            upDownDirection = .none
         }
 
-        if oldDirection != _upDownDirection {
+        if oldDirection != upDownDirection {
             adjustCamera()
         }
     }
 
     func stopMovingUpDown() {
-        let oldDirection = _upDownDirection
+        let oldDirection = upDownDirection
 
         self.removeAction(forKey: "upDownDirection")
-        _upDownDirection = .none
+        upDownDirection = .none
 
-        if oldDirection != _upDownDirection {
+        if oldDirection != upDownDirection {
             adjustCamera()
         }
     }
 
     func moveLeft() {
-        let oldDirection = _leftRightDirection
+        let oldDirection = leftRightDirection
 
-        if _leftRightDirection == .none {
+        if leftRightDirection == .none {
             let moveAction = SCNAction.moveBy(x: Game.Player.leftRightMoveDistance, y: 0.0, z: 0, duration: 0.5)
             self.runAction(SCNAction.repeatForever(moveAction), forKey: "leftRightDirection")
 
-            _leftRightDirection = .left
+            leftRightDirection = .left
         }
-        else if (_leftRightDirection == .right) {
+        else if (leftRightDirection == .right) {
             self.removeAction(forKey: "leftRightDirection")
 
-            _leftRightDirection = .none
+            leftRightDirection = .none
         }
 
-        if oldDirection != _leftRightDirection {
+        if oldDirection != leftRightDirection {
             adjustCamera()
         }
     }
 
     func moveRight() {
-        let oldDirection = _leftRightDirection
+        let oldDirection = leftRightDirection
 
-        if _leftRightDirection == .none {
+        if leftRightDirection == .none {
             let moveAction = SCNAction.moveBy(x: -Game.Player.leftRightMoveDistance, y: 0.0, z: 0, duration: 0.5)
             self.runAction(SCNAction.repeatForever(moveAction), forKey: "leftRightDirection")
 
-            _leftRightDirection = .right
+            leftRightDirection = .right
         }
-        else if (_leftRightDirection == .left) {
+        else if (leftRightDirection == .left) {
             self.removeAction(forKey: "leftRightDirection")
 
-            _leftRightDirection = .none
+            leftRightDirection = .none
         }
 
-        if oldDirection != _leftRightDirection {
+        if oldDirection != leftRightDirection {
             adjustCamera()
         }
     }
 
     func stopMovingLeftRight() {
-        let oldDirection = _leftRightDirection
+        let oldDirection = leftRightDirection
 
         self.removeAction(forKey: "leftRightDirection")
-        _leftRightDirection = .none
+        leftRightDirection = .none
 
-        if oldDirection != _leftRightDirection {
+        if oldDirection != leftRightDirection {
             adjustCamera()
         }
     }
@@ -256,13 +256,13 @@ class Player : GameObject {
     override func stop() {
         super.stop()
 
-        var position = _cameraNode!.position
+        var position = cameraNode!.position
         position.x = 0.0
 
         SCNTransaction.begin()
         SCNTransaction.animationDuration = 1.0
 
-        _cameraNode?.position = position
+        cameraNode?.position = position
 
         SCNTransaction.commit()
     }
@@ -278,15 +278,15 @@ class Player : GameObject {
             fatalError("Scene not loaded")
         }
 
-        _playerNode = scene!.rootNode.childNode(withName: "ship", recursively: true)
-        _playerNode?.name = "player"
+        playerNode = scene!.rootNode.childNode(withName: "ship", recursively: true)
+        playerNode?.name = "player"
 
-        if (_playerNode == nil) {
+        if (playerNode == nil) {
             fatalError("Ship node not found")
         }
 
-        _playerNode!.scale = SCNVector3(x: 0.25, y: 0.25, z: 0.25)
-        self.addChildNode(_playerNode!)
+        playerNode!.scale = SCNVector3(x: 0.25, y: 0.25, z: 0.25)
+        self.addChildNode(playerNode!)
 
         // Contact box
         // Part 3: Instead of use the plane itself we add a collision node to the player object
@@ -303,22 +303,22 @@ class Player : GameObject {
         self.addChildNode(contactBox)
 
             // Look at Node
-        _lookAtNode = SCNNode()
-        _lookAtNode!.position = lookAtForwardPosition
-        addChildNode(_lookAtNode!)
+        lookAtNode = SCNNode()
+        lookAtNode!.position = lookAtForwardPosition
+        addChildNode(lookAtNode!)
 
         // Camera Node
-        _cameraNode = SCNNode()
-        _cameraNode!.camera = SCNCamera()
-        _cameraNode!.position = cameraFowardPosition
-        _cameraNode!.camera!.zNear = 0.1
-        _cameraNode!.camera!.zFar = 600
-        self.addChildNode(_cameraNode!)
+        cameraNode = SCNNode()
+        cameraNode!.camera = SCNCamera()
+        cameraNode!.position = cameraFowardPosition
+        cameraNode!.camera!.zNear = 0.1
+        cameraNode!.camera!.zFar = 600
+        self.addChildNode(cameraNode!)
 
         // Link them
-        let constraint1 = SCNLookAtConstraint(target: _lookAtNode)
+        let constraint1 = SCNLookAtConstraint(target: lookAtNode)
         constraint1.isGimbalLockEnabled = true
-        _cameraNode!.constraints = [constraint1]
+        cameraNode!.constraints = [constraint1]
 
         // Create a spotlight at the player
         let spotLight = SCNLight()

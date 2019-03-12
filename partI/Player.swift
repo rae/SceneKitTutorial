@@ -15,9 +15,9 @@ class Player : SCNNode {
     private let lookAtForwardPosition = SCNVector3Make(0.0, 0.0, 1.0)
     private let cameraFowardPosition = SCNVector3(x: 0.8, y: 1, z: -0.5)
 
-    private var _lookAtNode: SCNNode?
-    private var _cameraNode: SCNNode?
-    private var _playerNode: SCNNode?
+    private var lookAtNode: SCNNode?
+    private var cameraNode: SCNNode?
+    private var playerNode: SCNNode?
 
     // MARK: - Initialisation
 
@@ -26,30 +26,30 @@ class Player : SCNNode {
 
         // Create player node
         let cubeGeometry = SCNBox(width: 0.5, height: 0.5, length: 0.5, chamferRadius: 0.0)
-        _playerNode = SCNNode(geometry: cubeGeometry)
-        _playerNode?.isHidden = true
-        addChildNode(_playerNode!)
+        playerNode = SCNNode(geometry: cubeGeometry)
+        playerNode?.isHidden = true
+        addChildNode(playerNode!)
 
         let colorMaterial = SCNMaterial()
         cubeGeometry.materials = [colorMaterial]
 
         // Look at Node
-        _lookAtNode = SCNNode()
-        _lookAtNode!.position = lookAtForwardPosition
-        addChildNode(_lookAtNode!)
+        lookAtNode = SCNNode()
+        lookAtNode!.position = lookAtForwardPosition
+        addChildNode(lookAtNode!)
 
         // Camera Node
-        _cameraNode = SCNNode()
-        _cameraNode!.camera = SCNCamera()
-        _cameraNode!.position = cameraFowardPosition
-        _cameraNode!.camera!.zNear = 0.1
-        _cameraNode!.camera!.zFar = 200
-        self.addChildNode(_cameraNode!)
+        cameraNode = SCNNode()
+        cameraNode!.camera = SCNCamera()
+        cameraNode!.position = cameraFowardPosition
+        cameraNode!.camera!.zNear = 0.1
+        cameraNode!.camera!.zFar = 200
+        self.addChildNode(cameraNode!)
 
         // Link them
-        let constraint1 = SCNLookAtConstraint(target: _lookAtNode)
+        let constraint1 = SCNLookAtConstraint(target: lookAtNode)
         constraint1.isGimbalLockEnabled = true
-        _cameraNode!.constraints = [constraint1]
+        cameraNode!.constraints = [constraint1]
 
         // Create a spotlight at the player
         let spotLight = SCNLight()

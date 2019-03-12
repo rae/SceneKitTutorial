@@ -16,31 +16,25 @@ import GameController
 import RBSceneUIKit
 
 class GameViewController: UIViewController, SCNSceneRendererDelegate {
-    private var _sceneView: SCNView!
-    private var _level: GameLevel!
-    private var _hud: HUD!
+    private var level: GameLevel!
 
     // New in Part 5: Use CoreMotion to fly the plane
-    private var _motionManager = CMMotionManager()
-    private var _startAttitude: CMAttitude?             // Start attitude
-    private var _currentAttitude: CMAttitude?           // Current attitude
+    private var motionManager = CMMotionManager()
+    private var startAttitude: CMAttitude?             // Start attitude
+    private var currentAttitude: CMAttitude?           // Current attitude
 
     // MARK: - Properties
 
-    var sceneView: SCNView {
-        return _sceneView
-    }
+    var sceneView: SCNView!
 
-    var hud: HUD {
-        return _hud
-    }
+    var hud: HUD!
 
     // MARK: - Render delegate (New in Part 4)
 
     func renderer(_ renderer: SCNSceneRenderer, didSimulatePhysicsAtTime time: TimeInterval) {
-        guard _level != nil else { return }
+        guard level != nil else { return }
 
-        _level.update(atTime: time)
+        level.update(atTime: time)
         renderer.loops = true
     }
 
@@ -48,9 +42,9 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
 
     @objc private func handleTap(_ gestureRecognize: UITapGestureRecognizer) {
         // New in Part 4: A tap is used to restart the level (see tutorial)
-        if _level.state == .loose || _level.state == .win {
-            _level.stop()
-            _level = nil
+        if level.state == .loose || level.state == .win {
+            level.stop()
+            level = nil
 
             DispatchQueue.main.async {
                 // Create things in main thread
@@ -62,79 +56,79 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
                 self.hud.reset()
 
                 self.sceneView.scene = level
-                self._level = level
+                self.level = level
 
                 self.hud.message("READY?", information: "- Touch screen to start -")
             }
         }
             // New in Part 5: A tap is used to start the level (see tutorial)
-        else if _level.state == .ready {
-            _startAttitude = _currentAttitude
-            _level.start()
+        else if level.state == .ready {
+            startAttitude = currentAttitude
+            level.start()
         }
         // New in Part 6: A tap is used to shot fire (see tutorial)
-        else if _level.state == .play {
-            _level.fire()
+        else if level.state == .play {
+            level.fire()
         }
     }
 
     @objc private func handleSwipe(_ gestureRecognize: UISwipeGestureRecognizer) {
-        if _level.state != .play {
+        if level.state != .play {
             return
         }
 
         if (gestureRecognize.direction == .left) {
-            _level!.swipeLeft()
+            level!.swipeLeft()
         }
         else if (gestureRecognize.direction == .right) {
-            _level!.swipeRight()
+            level!.swipeRight()
         }
         else if (gestureRecognize.direction == .down) {
-            _level!.swipeDown()
+            level!.swipeDown()
         }
         else if (gestureRecognize.direction == .up) {
-            _level!.swipeUp()
+            level!.swipeUp()
         }
     }
 
     // MARK: - Motion handling
 
     private func motionDidChange(data: CMDeviceMotion) {
-        _currentAttitude = data.attitude
+        currentAttitude = data.attitude
 
-        guard _level != nil, _level?.state == .play else { return }
+        guard level != nil, level?.state == .play else { return }
 
         // Up/Down
-        let diff1 = _startAttitude!.roll - _currentAttitude!.roll
+        let diff1 = startAttitude!.roll - currentAttitude!.roll
 
         if (diff1 >= Game.Motion.threshold) {
-            _level!.motionMoveUp()
+            level!.motionMoveUp()
         }
         else if (diff1 <= -Game.Motion.threshold) {
-            _level!.motionMoveDown()
+            level!.motionMoveDown()
         }
         else {
-            _level!.motionStopMovingUpDown()
+            level!.motionStopMovingUpDown()
         }
 
-        let diff2 = _startAttitude!.pitch - _currentAttitude!.pitch
+        let diff2 = startAttitude!.pitch - currentAttitude!.pitch
 
         if (diff2 >= Game.Motion.threshold) {
-            _level!.motionMoveLeft()
+            level!.motionMoveLeft()
         }
         else if (diff2 <= -Game.Motion.threshold) {
-            _level!.motionMoveRight()
+            level!.motionMoveRight()
         }
         else {
-            _level!.motionStopMovingLeftRight()
+            level!.motionStopMovingLeftRight()
         }
     }
 
     private func setupMotionHandler() {
-        if (GCController.controllers().count == 0 && _motionManager.isAccelerometerAvailable) {
-            _motionManager.accelerometerUpdateInterval = 1/60.0
+        if (GCController.controllers().count == 0 && motionManager.isAccelerometerAvailable) {
+            motionManager.accelerometerUpdateInterval = 1/60.0
 
-            _motionManager.startDeviceMotionUpdates(to: OperationQueue.main, withHandler: {(data, error) in
+            motionManager.startDeviceMotionUpdates(to: OperationQueue.main, withHandler: {(data, error) in
                 self.motionDidChange(data: data!)
             })
         }
@@ -146,9 +140,9 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         super.viewWillAppear(animated)
 
         // Part 3: HUD is created and assigned to view and game level
-        _hud = HUD(size: self.view.bounds.size)
-        _level.hud = _hud
-        _sceneView.overlaySKScene = _hud.scene
+        hud = HUD(size: self.view.bounds.size)
+        level.hud = hud
+        sceneView.overlaySKScene = hud.scene
 
         self.hud.message("READY?", information: "- Touch screen to start -")
     }
@@ -156,37 +150,37 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        _level = GameLevel()
-        _level.create()
+        level = GameLevel()
+        level.create()
 
-        _sceneView = SCNView()
-        _sceneView.scene = _level
-        _sceneView.allowsCameraControl = false
-        _sceneView.showsStatistics = false
-        _sceneView.backgroundColor = UIColor.black
-        _sceneView.delegate = self
+        sceneView = SCNView()
+        sceneView.scene = level
+        sceneView.allowsCameraControl = false
+        sceneView.showsStatistics = false
+        sceneView.backgroundColor = UIColor.black
+        sceneView.delegate = self
 
-        self.view = _sceneView
+        self.view = sceneView
 
         setupMotionHandler()
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        _sceneView!.addGestureRecognizer(tapGesture)
+        sceneView!.addGestureRecognizer(tapGesture)
 
         let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe))
         swipeLeftGesture.direction = .left
-        _sceneView!.addGestureRecognizer(swipeLeftGesture)
+        sceneView!.addGestureRecognizer(swipeLeftGesture)
 
         let swipeRightGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe))
         swipeRightGesture.direction = .right
-        _sceneView!.addGestureRecognizer(swipeRightGesture)
+        sceneView!.addGestureRecognizer(swipeRightGesture)
 
         let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe))
         swipeDownGesture.direction = .down
-        _sceneView!.addGestureRecognizer(swipeDownGesture)
+        sceneView!.addGestureRecognizer(swipeDownGesture)
 
         let swipeUpGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe))
         swipeUpGesture.direction = .up
-        _sceneView!.addGestureRecognizer(swipeUpGesture)
+        sceneView!.addGestureRecognizer(swipeUpGesture)
     }
 }

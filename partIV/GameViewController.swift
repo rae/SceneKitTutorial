@@ -14,25 +14,19 @@ import SpriteKit
 import RBSceneUIKit
 
 class GameViewController: UIViewController, SCNSceneRendererDelegate {
-    private var _sceneView: SCNView!
-    private var _level: GameLevel!
-    private var _hud: HUD!
+    private var level: GameLevel!
 
     // MARK: - Properties
 
-    var sceneView: SCNView {
-        return _sceneView
-    }
+    private(set) var sceneView: SCNView!
 
-    var hud: HUD {
-        return _hud
-    }
+    private(set) var hud: HUD!
 
     // MARK: - Render delegate (New in Part 4)
 
     func renderer(_ renderer: SCNSceneRenderer, didSimulatePhysicsAtTime time: TimeInterval) {
-        if _level != nil {
-            _level.update(atTime: time)
+        if level != nil {
+            level.update(atTime: time)
         }
 
         renderer.loops = true
@@ -42,9 +36,9 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
 
     @objc private func handleTap(_ gestureRecognize: UITapGestureRecognizer) {
         // New in Part 4: A tap is used to restart the level (see tutorial)
-        if _level.state == .loose || _level.state == .win {
-            _level.stop()
-            _level = nil
+        if level.state == .lose || level.state == .win {
+            level.stop()
+            level = nil
 
             DispatchQueue.main.async {
                 // Create things in main thread
@@ -56,7 +50,7 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
                 self.hud.reset()
 
                 self.sceneView.scene = level
-                self._level = level
+                self.level = level
             }
 
         }
@@ -64,10 +58,10 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
 
     @objc private func handleSwipe(_ gestureRecognize: UISwipeGestureRecognizer) {
         if (gestureRecognize.direction == .left) {
-            _level!.swipeLeft()
+            level!.swipeLeft()
         }
         else if (gestureRecognize.direction == .right) {
-            _level!.swipeRight()
+            level!.swipeRight()
         }
     }
 
@@ -77,35 +71,35 @@ class GameViewController: UIViewController, SCNSceneRendererDelegate {
         super.viewWillAppear(animated)
 
         // Part 3: HUD is created and assigned to view and game level
-        _hud = HUD(size: self.view.bounds.size)
-        _level.hud = _hud
-        _sceneView.overlaySKScene = _hud.scene
+        hud = HUD(size: view.bounds.size)
+        level.hud = hud
+        sceneView.overlaySKScene = hud.scene
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        _level = GameLevel()
-        _level.create()
+        level = GameLevel()
+        level.create()
 
-        _sceneView = SCNView()
-        _sceneView.scene = _level
-        _sceneView.allowsCameraControl = false
-        _sceneView.showsStatistics = false
-        _sceneView.backgroundColor = UIColor.black
-        _sceneView.delegate = self
+        sceneView = SCNView()
+        sceneView.scene = level
+        sceneView.allowsCameraControl = false
+        sceneView.showsStatistics = false
+        sceneView.backgroundColor = UIColor.black
+        sceneView.delegate = self
 
-        self.view = _sceneView
+        view = sceneView
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        _sceneView!.addGestureRecognizer(tapGesture)
+        sceneView!.addGestureRecognizer(tapGesture)
 
         let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe))
         swipeLeftGesture.direction = .left
-        _sceneView!.addGestureRecognizer(swipeLeftGesture)
+        sceneView!.addGestureRecognizer(swipeLeftGesture)
 
         let swipeRightGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe))
         swipeRightGesture.direction = .right
-        _sceneView!.addGestureRecognizer(swipeRightGesture)
+        sceneView!.addGestureRecognizer(swipeRightGesture)
     }
 }
